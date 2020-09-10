@@ -3,6 +3,7 @@ package com.pedro.schwarz.desafioyourdev.ui.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.pedro.schwarz.desafioyourdev.model.Movie
 import com.pedro.schwarz.desafioyourdev.repository.MovieRepository
 
 class MovieListViewModel(private val movieRepository: MovieRepository) : ViewModel() {
@@ -30,4 +31,6 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
     fun refreshMovies() = movieRepository.fetchMoviesAPI()
 
     fun fetchMoviesByTitle(title: String) = movieRepository.fetchMoviesByTitle(title)
+
+    fun toggleMovieFavorite(movie: Movie) = movieRepository.toggleMovieFavorite(movie)
 }

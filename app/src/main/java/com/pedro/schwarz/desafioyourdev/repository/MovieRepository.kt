@@ -15,6 +15,8 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieClient: M
 
     private val _movies =
         MediatorLiveData<Resource<List<Movie>>>().also { Success<List<Movie>>(data = arrayListOf()) }
+    private val _favoriteMovies =
+        MediatorLiveData<Resource<List<Movie>>>().also { Success<List<Movie>>(data = arrayListOf()) }
 
     fun fetchMovies(): LiveData<Resource<List<Movie>>> {
         _movies.addSource(movieDAO.fetchMovies()) { result ->
@@ -38,8 +40,8 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieClient: M
         return _movies
     }
 
-    fun fetchMoviesAPI(): LiveData<Resource<Void>> {
-        val liveData = MutableLiveData<Resource<Void>>()
+    fun fetchMoviesAPI(): LiveData<Resource<Unit>> {
+        val liveData = MutableLiveData<Resource<Unit>>()
         movieClient.fetchMovies(
             onSuccess = { result ->
                 CoroutineScope(Dispatchers.IO).launch {
@@ -49,11 +51,11 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieClient: M
                         _movies.value = Failure(error = exception.message)
                     }
                 }
-                liveData.value = Success(data = null)
+                liveData.value = Success()
             },
             onFailure = { error ->
                 _movies.value = Failure(error = error)
-                liveData.value = Failure(error = null)
+                liveData.value = Failure()
             },
         )
         return liveData
@@ -69,5 +71,25 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieClient: M
                 _movies.value = Success(data = arrayListOf())
             },
         )
+    }
+
+    fun toggleMovieFavorite(movie: Movie): LiveData<Resource<Unit>> {
+        val liveData = MutableLiveData<Resource<Unit>>()
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                movieDAO.updateMovie(movie.copy(favorite = !movie.favorite))
+                liveData.postValue(Success())
+            } catch (exception: IOException) {
+                liveData.postValue(Failure(error = exception.message))
+            }
+        }
+        return liveData
+    }
+
+    fun fetchFavoriteMovies(): LiveData<Resource<List<Movie>>> {
+        _favoriteMovies.addSource(movieDAO.fetchFavoriteMovies()) { result ->
+            _favoriteMovies.value = Success(data = result)
+        }
+        return _favoriteMovies
     }
 }

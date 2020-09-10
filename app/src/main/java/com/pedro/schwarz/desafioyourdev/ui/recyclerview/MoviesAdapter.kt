@@ -3,6 +3,7 @@ package com.pedro.schwarz.desafioyourdev.ui.recyclerview
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
@@ -14,7 +15,10 @@ import com.pedro.schwarz.desafioyourdev.model.Movie
 import com.pedro.schwarz.desafioyourdev.ui.extension.setAgeColor
 import com.pedro.schwarz.desafioyourdev.ui.extension.setImage
 
-class MoviesAdapter : ListAdapter<Movie, MoviesAdapter.ViewHolder>(MovieCallback) {
+class MoviesAdapter(
+    var onToggleFavorite: (movie: Movie) -> Unit = {},
+    var onItemClick: (title: String) -> Unit = {}
+) : ListAdapter<Movie, MoviesAdapter.ViewHolder>(MovieCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater =
             LayoutInflater.from(parent.context).inflate(R.layout.item_movie, parent, false)
@@ -25,7 +29,7 @@ class MoviesAdapter : ListAdapter<Movie, MoviesAdapter.ViewHolder>(MovieCallback
         holder.bind(getItem(position))
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private lateinit var movie: Movie
 
         fun bind(item: Movie) {
@@ -46,6 +50,10 @@ class MoviesAdapter : ListAdapter<Movie, MoviesAdapter.ViewHolder>(MovieCallback
                 itemView.findViewById<TextView>(R.id.item_movie_summary).text = movie.summary_short
                 itemView.findViewById<ImageView>(R.id.item_movie_image)
                     .apply { setImage(movie.src) }
+                itemView.findViewById<ImageButton>(R.id.item_movie_toggle_favorite_btn).apply {
+                    setImage(movie.favorite)
+                    setOnClickListener { onToggleFavorite(movie) }
+                }
             }
         }
     }

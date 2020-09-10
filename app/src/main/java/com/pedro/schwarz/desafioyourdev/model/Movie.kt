@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Movie(
-    @PrimaryKey()
+    @PrimaryKey
     val display_title: String,
     val mpaa_rating: String,
     val critics_pick: Int,
@@ -17,4 +17,5 @@ data class Movie(
     val date_updated: String,
     val src: String,
     val linkUrl: String,
+    val favorite: Boolean = false
 )

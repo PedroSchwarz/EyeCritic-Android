@@ -9,20 +9,25 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.pedro.schwarz.desafioyourdev.R
+import com.pedro.schwarz.desafioyourdev.model.Movie
 import com.pedro.schwarz.desafioyourdev.repository.Failure
 import com.pedro.schwarz.desafioyourdev.repository.Success
 import com.pedro.schwarz.desafioyourdev.ui.extension.setContent
 import com.pedro.schwarz.desafioyourdev.ui.extension.showMessage
 import com.pedro.schwarz.desafioyourdev.ui.extension.toggleVisibility
 import com.pedro.schwarz.desafioyourdev.ui.recyclerview.MoviesAdapter
+import com.pedro.schwarz.desafioyourdev.ui.viewmodel.AppViewModel
+import com.pedro.schwarz.desafioyourdev.ui.viewmodel.Components
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.MovieListViewModel
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private val viewModel by viewModel<MovieListViewModel>()
     private val moviesAdapter by inject<MoviesAdapter>()
+    private val appViewModel by sharedViewModel<AppViewModel>()
 
     private lateinit var movieListRefresh: SwipeRefreshLayout
     private lateinit var movieList: RecyclerView
@@ -31,6 +36,26 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fetchMovies()
+        configToggleFavorite()
+    }
+
+    private fun configToggleFavorite() {
+        moviesAdapter.onToggleFavorite = { movie ->
+            toggleFavorite(movie)
+        }
+    }
+
+    private fun toggleFavorite(movie: Movie) {
+        viewModel.toggleMovieFavorite(movie).observe(this, { result ->
+            when (result) {
+                is Success -> {
+                    showMessage("Movie updated")
+                }
+                is Failure -> {
+                    result.error?.let { showMessage(it) }
+                }
+            }
+        })
     }
 
     private fun fetchMovies() {
@@ -73,6 +98,7 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        appViewModel.setComponents = Components(appBar = true, bottomBar = true)
         configListRefresh(view)
         configMovieList(view)
         setIsLoadingListener(view)

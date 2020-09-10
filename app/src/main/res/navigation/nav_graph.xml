@@ -10,4 +10,9 @@
         android:name="com.pedro.schwarz.desafioyourdev.ui.fragment.MovieListFragment"
         android:label="fragment_movie_list"
         tools:layout="@layout/fragment_movie_list" />
+    <fragment
+        android:id="@+id/favoriteMovieListFragment"
+        android:name="com.pedro.schwarz.desafioyourdev.ui.fragment.FavoriteMovieListFragment"
+        android:label="fragment_favorite_movie_list"
+        tools:layout="@layout/fragment_favorite_movie_list" />
 </navigation>
