@@ -2,9 +2,11 @@ package com.pedro.schwarz.desafioyourdev.ui.extension
 
 import android.content.res.ColorStateList
 import android.graphics.drawable.Icon
+import android.text.format.DateUtils
 import android.view.View
-import android.widget.ImageButton
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
@@ -14,6 +16,8 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.pedro.schwarz.desafioyourdev.R
+import java.text.SimpleDateFormat
+import java.util.*
 
 fun Fragment.showMessage(message: String) {
     Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
@@ -63,6 +67,30 @@ fun FloatingActionButton.setImage(favorite: Boolean) {
     } else {
         setImageIcon(Icon.createWithResource(this.context, R.drawable.ic_unfavorite))
     }
+}
+
+fun FloatingActionButton.toggleRotateAnimation(isMenuOpen: Boolean) {
+    animation = if (isMenuOpen) {
+        AnimationUtils.loadAnimation(this.context, R.anim.rotate_in)
+    } else {
+        AnimationUtils.loadAnimation(this.context, R.anim.rotate_out)
+    }
+}
+
+fun FloatingActionButton.toggleVisibilityAnimation(isMenuOpen: Boolean) {
+    if (isMenuOpen) {
+        isClickable = true
+        show()
+    } else {
+        isClickable = false
+        hide()
+    }
+}
+
+fun TextView.toLocaleDate(dateString: String) {
+    val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    val date = format.parse(dateString)
+    date?.let { text = DateUtils.getRelativeTimeSpanString(date.time) }
 }
 
 fun View.toggleVisibility(visible: Boolean) {

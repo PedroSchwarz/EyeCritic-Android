@@ -5,6 +5,7 @@ import android.view.*
 import android.widget.ProgressBar
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -19,12 +20,14 @@ import com.pedro.schwarz.desafioyourdev.ui.recyclerview.MoviesAdapter
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.AppViewModel
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.Components
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.MovieListViewModel
+import jp.wasabeef.recyclerview.animators.OvershootInLeftAnimator
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
 
+    private val controller by lazy { findNavController() }
     private val viewModel by viewModel<MovieListViewModel>()
     private val moviesAdapter by inject<MoviesAdapter>()
     private val appViewModel by sharedViewModel<AppViewModel>()
@@ -36,7 +39,20 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fetchMovies()
+        configMovieClick()
         configToggleFavorite()
+    }
+
+    private fun configMovieClick() {
+        moviesAdapter.onItemClick = { title ->
+            goToMovieDetails(title)
+        }
+    }
+
+    private fun goToMovieDetails(title: String) {
+        val action =
+            MovieListFragmentDirections.actionMovieListFragmentToMovieDetailsFragment(title)
+        controller.navigate(action)
     }
 
     private fun configToggleFavorite() {
@@ -122,6 +138,7 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
     private fun configMovieList(view: View) {
         movieList = view.findViewById<RecyclerView>(R.id.movie_list).apply {
             setContent(false, StaggeredGridLayoutManager.VERTICAL, false, moviesAdapter)
+            itemAnimator = OvershootInLeftAnimator().apply { addDuration = 300 }
         }
     }
 

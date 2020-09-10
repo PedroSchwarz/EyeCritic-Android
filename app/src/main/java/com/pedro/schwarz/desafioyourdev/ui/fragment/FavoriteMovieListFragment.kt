@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.pedro.schwarz.desafioyourdev.R
@@ -23,6 +24,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FavoriteMovieListFragment : Fragment() {
 
+    private val controller by lazy { findNavController() }
     private val viewModel by viewModel<FavoriteMovieListViewModel>()
     private val moviesAdapter by inject<MoviesAdapter>()
     private val appViewModel by sharedViewModel<AppViewModel>()
@@ -32,7 +34,22 @@ class FavoriteMovieListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fetchMovies()
+        configMovieClick()
         configToggleFavorite()
+    }
+
+    private fun configMovieClick() {
+        moviesAdapter.onItemClick = { title ->
+            goToMovieDetails(title)
+        }
+    }
+
+    private fun goToMovieDetails(title: String) {
+        val action =
+            FavoriteMovieListFragmentDirections.actionFavoriteMovieListFragmentToMovieDetailsFragment(
+                title
+            )
+        controller.navigate(action)
     }
 
     private fun configToggleFavorite() {

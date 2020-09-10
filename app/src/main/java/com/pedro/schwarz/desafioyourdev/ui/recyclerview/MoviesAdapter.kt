@@ -39,6 +39,8 @@ class MoviesAdapter(
 
         private fun setContent() {
             if (::movie.isInitialized) {
+                itemView.findViewById<CardView>(R.id.item_movie_body)
+                    .setOnClickListener { onItemClick(movie.display_title) }
                 itemView.findViewById<TextView>(R.id.item_movie_title).text = movie.display_title
                 itemView.findViewById<CardView>(R.id.item_movie_age_card).apply {
                     setAgeColor(movie.mpaa_rating)
