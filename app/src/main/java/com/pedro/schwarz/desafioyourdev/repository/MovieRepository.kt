@@ -92,4 +92,6 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieClient: M
         }
         return _favoriteMovies
     }
+
+    fun fetchMovie(title: String) = movieDAO.fetchMovie(title)
 }

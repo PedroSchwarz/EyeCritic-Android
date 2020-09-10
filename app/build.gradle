@@ -78,4 +78,8 @@ dependencies {
     def gson_version = "2.4.0"
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$gson_version"
+
+    // RecyclerView Animations
+    def recycler_animations_version = "4.0.1"
+    implementation "jp.wasabeef:recyclerview-animators:$recycler_animations_version"
 }

@@ -3,13 +3,13 @@ package com.pedro.schwarz.desafioyourdev.ui.recyclerview
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.pedro.schwarz.desafioyourdev.R
 import com.pedro.schwarz.desafioyourdev.model.Movie
 import com.pedro.schwarz.desafioyourdev.ui.extension.setAgeColor
@@ -39,6 +39,8 @@ class MoviesAdapter(
 
         private fun setContent() {
             if (::movie.isInitialized) {
+                itemView.findViewById<CardView>(R.id.item_movie_body)
+                    .setOnClickListener { onItemClick(movie.display_title) }
                 itemView.findViewById<TextView>(R.id.item_movie_title).text = movie.display_title
                 itemView.findViewById<CardView>(R.id.item_movie_age_card).apply {
                     setAgeColor(movie.mpaa_rating)
@@ -50,10 +52,11 @@ class MoviesAdapter(
                 itemView.findViewById<TextView>(R.id.item_movie_summary).text = movie.summary_short
                 itemView.findViewById<ImageView>(R.id.item_movie_image)
                     .apply { setImage(movie.src) }
-                itemView.findViewById<ImageButton>(R.id.item_movie_toggle_favorite_btn).apply {
-                    setImage(movie.favorite)
-                    setOnClickListener { onToggleFavorite(movie) }
-                }
+                itemView.findViewById<FloatingActionButton>(R.id.item_movie_toggle_favorite_btn)
+                    .apply {
+                        setImage(movie.favorite)
+                        setOnClickListener { onToggleFavorite(movie) }
+                    }
             }
         }
     }
