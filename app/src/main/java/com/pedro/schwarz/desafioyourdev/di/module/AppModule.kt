@@ -1,5 +1,8 @@
 package com.pedro.schwarz.desafioyourdev.di.module
 
+import androidx.room.Room
+import com.pedro.schwarz.desafioyourdev.database.AppDatabase
+import com.pedro.schwarz.desafioyourdev.database.dao.MovieDAO
 import com.pedro.schwarz.desafioyourdev.repository.MovieRepository
 import com.pedro.schwarz.desafioyourdev.retrofit.client.MovieClient
 import com.pedro.schwarz.desafioyourdev.retrofit.service.MovieService
@@ -9,6 +12,14 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+
+private const val DATABASE_NAME = "desafio_your_dev"
+
+val databaseModule = module {
+    single<AppDatabase> {
+        Room.databaseBuilder(get(), AppDatabase::class.java, DATABASE_NAME).build()
+    }
+}
 
 val retrofitModule = module {
     single<Retrofit> {
@@ -22,7 +33,8 @@ val retrofitModule = module {
 }
 
 val daoModule = module {
-    single<MovieRepository> { MovieRepository(get()) }
+    single<MovieDAO> { get<AppDatabase>().getMovieDAO() }
+    single<MovieRepository> { MovieRepository(get(), get()) }
 }
 
 val uiModule = module {

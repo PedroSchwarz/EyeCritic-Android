@@ -1,6 +1,11 @@
 package com.pedro.schwarz.desafioyourdev.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
 data class Movie(
+    @PrimaryKey()
     val display_title: String,
     val mpaa_rating: String,
     val critics_pick: Int,

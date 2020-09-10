@@ -54,6 +54,7 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
             when (result) {
                 is Success -> {
                     viewModel.setIsRefreshing = false
+                    showMessage("List updated")
                 }
                 is Failure -> {
                     viewModel.setIsRefreshing = false
