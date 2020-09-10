@@ -15,6 +15,8 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieClient: M
 
     private val _movies =
         MediatorLiveData<Resource<List<Movie>>>().also { Success<List<Movie>>(data = arrayListOf()) }
+    private val _favoriteMovies =
+        MediatorLiveData<Resource<List<Movie>>>().also { Success<List<Movie>>(data = arrayListOf()) }
 
     fun fetchMovies(): LiveData<Resource<List<Movie>>> {
         _movies.addSource(movieDAO.fetchMovies()) { result ->
@@ -82,5 +84,12 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieClient: M
             }
         }
         return liveData
+    }
+
+    fun fetchFavoriteMovies(): LiveData<Resource<List<Movie>>> {
+        _favoriteMovies.addSource(movieDAO.fetchFavoriteMovies()) { result ->
+            _favoriteMovies.value = Success(data = result)
+        }
+        return _favoriteMovies
     }
 }

@@ -18,4 +18,7 @@ interface MovieDAO {
 
     @Update
     fun updateMovie(movie: Movie)
+
+    @Query("SELECT * FROM movie WHERE favorite = 1")
+    fun fetchFavoriteMovies(): LiveData<List<Movie>>
 }
