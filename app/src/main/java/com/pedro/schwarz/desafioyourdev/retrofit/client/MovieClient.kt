@@ -1,13 +1,12 @@
 package com.pedro.schwarz.desafioyourdev.retrofit.client
 
 import com.pedro.schwarz.desafioyourdev.model.MovieResponse
-import com.pedro.schwarz.desafioyourdev.retrofit.AppRetrofit
 import com.pedro.schwarz.desafioyourdev.retrofit.service.MovieService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class MovieClient(private val movieService: MovieService = AppRetrofit().movieService) {
+class MovieClient(private val movieService: MovieService) {
 
     private fun <T> execute(
         call: Call<T>,
@@ -35,6 +34,18 @@ class MovieClient(private val movieService: MovieService = AppRetrofit().movieSe
     ) {
         execute(
             movieService.fetchMovies(),
+            onSuccess = onSuccess,
+            onFailure = onFailure,
+        )
+    }
+
+    fun fetchMoviesByTitle(
+        title: String,
+        onSuccess: (result: MovieResponse) -> Unit,
+        onFailure: (error: String) -> Unit
+    ) {
+        execute(
+            movieService.fetchMoviesByTitle(title),
             onSuccess = onSuccess,
             onFailure = onFailure,
         )

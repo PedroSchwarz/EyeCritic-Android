@@ -1,6 +1,7 @@
 package com.pedro.schwarz.desafioyourdev.ui.extension
 
 import android.content.res.ColorStateList
+import android.view.View
 import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
@@ -44,4 +45,9 @@ fun RecyclerView.setContent(
         StaggeredGridLayoutManager(2, orientation)
     }
     adapter = itemsAdapter
+}
+
+fun View.toggleVisibility(visible: Boolean) {
+    visibility = if (visible) View.VISIBLE
+    else View.INVISIBLE
 }
