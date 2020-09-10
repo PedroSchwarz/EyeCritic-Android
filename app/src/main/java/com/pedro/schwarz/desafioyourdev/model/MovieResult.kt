@@ -15,15 +15,15 @@ class MovieResult(
 ) {
     fun toMovie(): Movie {
         return Movie(
-            display_title,
-            mpaa_rating,
-            critics_pick,
-            byline,
-            headline,
-            summary_short,
-            publication_date,
-            opening_date,
-            date_updated,
+            display_title = display_title,
+            mpaa_rating = mpaa_rating,
+            critics_pick = critics_pick,
+            byline = byline,
+            headline = headline,
+            summary_short = summary_short,
+            publication_date = publication_date,
+            opening_date = opening_date,
+            date_updated = date_updated,
             src = multimedia?.src ?: "",
             linkUrl = link.url
         )
