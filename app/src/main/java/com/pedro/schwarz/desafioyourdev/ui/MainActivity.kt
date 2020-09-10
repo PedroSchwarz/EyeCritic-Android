@@ -1,9 +1,10 @@
-package com.pedro.schwarz.desafioyourdev
+package com.pedro.schwarz.desafioyourdev.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.pedro.schwarz.desafioyourdev.R
 
 class MainActivity : AppCompatActivity() {
     private val controller by lazy { findNavController(R.id.nav_host) }
