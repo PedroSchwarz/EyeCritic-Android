@@ -41,8 +41,8 @@ class MovieRepository(private val movieClient: MovieClient) {
             onSuccess = { result ->
                 _movies.value = Success(data = result.results)
             },
-            onFailure = { error ->
-                _movies.value = Failure(error = error)
+            onFailure = {
+                _movies.value = Success(data = arrayListOf())
             },
         )
     }

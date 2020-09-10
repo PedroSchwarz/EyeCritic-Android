@@ -1,10 +1,9 @@
 package com.pedro.schwarz.desafioyourdev.ui.fragment
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ProgressBar
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -20,7 +19,7 @@ import com.pedro.schwarz.desafioyourdev.ui.viewmodel.MovieListViewModel
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MovieListFragment : Fragment() {
+class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
 
     private val viewModel by viewModel<MovieListViewModel>()
     private val moviesAdapter by inject<MoviesAdapter>()
@@ -67,6 +66,7 @@ class MovieListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_movie_list, container, false)
     }
 
@@ -102,5 +102,42 @@ class MovieListFragment : Fragment() {
         movieListRefresh = view.findViewById<SwipeRefreshLayout>(R.id.movie_list_refresh).apply {
             setOnRefreshListener { refreshMovies() }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.movie_list_menu, menu)
+        val search = menu.findItem(R.id.movie_list_search)
+        val searchView = search.actionView as SearchView
+        searchView.apply {
+            isSubmitButtonEnabled = true
+            setOnQueryTextListener(this@MovieListFragment)
+        }
+    }
+
+    override fun onQueryTextSubmit(query: String?): Boolean {
+        query?.let {
+            if (it.trim().isEmpty()) {
+                fetchMovies()
+            } else {
+                fetchMoviesByTitle(query)
+            }
+        }
+
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String?): Boolean {
+        newText?.let {
+            if (it.trim().isEmpty()) {
+                fetchMovies()
+            } else {
+                fetchMoviesByTitle(newText)
+            }
+        }
+        return true
+    }
+
+    private fun fetchMoviesByTitle(title: String) {
+        viewModel.fetchMoviesByTitle(title)
     }
 }
