@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.pedro.schwarz.desafioyourdev.R
 
 fun Fragment.showMessage(message: String) {
@@ -56,7 +57,7 @@ fun ImageView.setImage(imageUrl: String) {
         .placeholder(R.drawable.image_placeholder).into(this)
 }
 
-fun ImageButton.setImage(favorite: Boolean) {
+fun FloatingActionButton.setImage(favorite: Boolean) {
     if (favorite) {
         setImageIcon(Icon.createWithResource(this.context, R.drawable.ic_favorite))
     } else {
