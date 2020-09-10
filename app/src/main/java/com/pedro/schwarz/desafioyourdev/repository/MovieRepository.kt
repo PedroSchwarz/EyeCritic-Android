@@ -38,8 +38,8 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieClient: M
         return _movies
     }
 
-    fun fetchMoviesAPI(): LiveData<Resource<Void>> {
-        val liveData = MutableLiveData<Resource<Void>>()
+    fun fetchMoviesAPI(): LiveData<Resource<Unit>> {
+        val liveData = MutableLiveData<Resource<Unit>>()
         movieClient.fetchMovies(
             onSuccess = { result ->
                 CoroutineScope(Dispatchers.IO).launch {
@@ -49,11 +49,11 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieClient: M
                         _movies.value = Failure(error = exception.message)
                     }
                 }
-                liveData.value = Success(data = null)
+                liveData.value = Success()
             },
             onFailure = { error ->
                 _movies.value = Failure(error = error)
-                liveData.value = Failure(error = null)
+                liveData.value = Failure()
             },
         )
         return liveData
@@ -69,5 +69,18 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieClient: M
                 _movies.value = Success(data = arrayListOf())
             },
         )
+    }
+
+    fun toggleMovieFavorite(movie: Movie): LiveData<Resource<Unit>> {
+        val liveData = MutableLiveData<Resource<Unit>>()
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                movieDAO.updateMovie(movie.copy(favorite = !movie.favorite))
+                liveData.postValue(Success())
+            } catch (exception: IOException) {
+                liveData.postValue(Failure(error = exception.message))
+            }
+        }
+        return liveData
     }
 }

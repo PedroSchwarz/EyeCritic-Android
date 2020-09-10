@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/movieListFragment"
+        android:icon="@drawable/ic_dashboard"
+        android:title="All Movies"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/favoriteMovieListFragment"
+        android:icon="@drawable/ic_favorites_list"
+        android:title="Favorites"
+        app:showAsAction="always" />
+</menu>

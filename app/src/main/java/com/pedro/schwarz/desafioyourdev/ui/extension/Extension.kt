@@ -1,7 +1,9 @@
 package com.pedro.schwarz.desafioyourdev.ui.extension
 
 import android.content.res.ColorStateList
+import android.graphics.drawable.Icon
 import android.view.View
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
@@ -52,6 +54,14 @@ fun RecyclerView.setContent(
 fun ImageView.setImage(imageUrl: String) {
     Glide.with(this.context).load(imageUrl).error(R.drawable.image_placeholder)
         .placeholder(R.drawable.image_placeholder).into(this)
+}
+
+fun ImageButton.setImage(favorite: Boolean) {
+    if (favorite) {
+        setImageIcon(Icon.createWithResource(this.context, R.drawable.ic_favorite))
+    } else {
+        setImageIcon(Icon.createWithResource(this.context, R.drawable.ic_unfavorite))
+    }
 }
 
 fun View.toggleVisibility(visible: Boolean) {

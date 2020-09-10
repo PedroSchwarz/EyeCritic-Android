@@ -7,6 +7,7 @@ import com.pedro.schwarz.desafioyourdev.repository.MovieRepository
 import com.pedro.schwarz.desafioyourdev.retrofit.client.MovieClient
 import com.pedro.schwarz.desafioyourdev.retrofit.service.MovieService
 import com.pedro.schwarz.desafioyourdev.ui.recyclerview.MoviesAdapter
+import com.pedro.schwarz.desafioyourdev.ui.viewmodel.AppViewModel
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.MovieListViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -43,4 +44,5 @@ val uiModule = module {
 
 val viewModelModule = module {
     viewModel<MovieListViewModel> { MovieListViewModel(get()) }
+    viewModel<AppViewModel> { AppViewModel() }
 }
