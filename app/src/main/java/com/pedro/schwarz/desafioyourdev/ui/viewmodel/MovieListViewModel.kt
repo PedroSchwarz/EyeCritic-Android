@@ -29,5 +29,5 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
 
     fun refreshMovies() = movieRepository.fetchMoviesAPI()
 
-    fun fetchMoviesByTitle(title: String) = movieRepository.fetchMoviesByTitleAPI(title)
+    fun fetchMoviesByTitle(title: String) = movieRepository.fetchMoviesByTitle(title)
 }

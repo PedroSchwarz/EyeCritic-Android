@@ -24,7 +24,7 @@ class MovieRepository(private val movieClient: MovieClient) {
         val liveData = MutableLiveData<Resource<Void>>()
         movieClient.fetchMovies(
             onSuccess = { result ->
-                _movies.value = Success(data = result.results)
+                _movies.value = Success(data = result)
                 liveData.value = Success(data = null)
             },
             onFailure = { error ->
@@ -35,11 +35,11 @@ class MovieRepository(private val movieClient: MovieClient) {
         return liveData
     }
 
-    fun fetchMoviesByTitleAPI(title: String) {
+    private fun fetchMoviesByTitleAPI(title: String) {
         movieClient.fetchMoviesByTitle(
             title = title,
             onSuccess = { result ->
-                _movies.value = Success(data = result.results)
+                _movies.value = Success(data = result)
             },
             onFailure = {
                 _movies.value = Success(data = arrayListOf())
