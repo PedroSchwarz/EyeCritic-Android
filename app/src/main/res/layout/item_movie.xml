@@ -23,6 +23,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <ImageView
+                android:id="@+id/item_movie_image"
+                android:layout_width="0dp"
+                android:layout_height="150dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:srcCompat="@tools:sample/avatars" />
+
             <TextView
                 android:id="@+id/item_movie_title"
                 android:layout_width="0dp"
@@ -34,7 +44,7 @@
                 android:textSize="16sp"
                 app:layout_constraintEnd_toStartOf="@+id/item_movie_age_card"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/item_movie_image"
                 tools:text="Movie title" />
 
             <androidx.cardview.widget.CardView
@@ -74,8 +84,8 @@
                 app:layout_constraintEnd_toEndOf="@+id/item_movie_age_card"
                 app:layout_constraintStart_toStartOf="@+id/item_movie_title"
                 app:layout_constraintTop_toBottomOf="@+id/item_movie_title"
-                app:layout_constraintVertical_bias="0.0"
                 tools:text="Movie summary" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

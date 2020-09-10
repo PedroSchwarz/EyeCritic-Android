@@ -8,6 +8,8 @@ data class Movie(
     val headline: String,
     val summary_short: String,
     val publication_date: String,
-    val opening_date: String,
+    val opening_date: String?,
     val date_updated: String,
+    val src: String,
+    val linkUrl: String,
 )
