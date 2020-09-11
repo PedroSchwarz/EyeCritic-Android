@@ -127,4 +127,17 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieClient: M
             onFailure("Movie not found")
         })
     }
+
+    fun deleteMovie(movie: Movie): LiveData<Resource<Unit>> {
+        val liveData = MutableLiveData<Resource<Unit>>()
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                movieDAO.deleteMovie(movie)
+                liveData.postValue(Success())
+            } catch (exception: IOException) {
+                liveData.postValue(Failure(error = exception.message))
+            }
+        }
+        return liveData
+    }
 }
