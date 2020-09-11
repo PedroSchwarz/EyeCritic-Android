@@ -130,7 +130,7 @@ class MovieDetailsFragment : Fragment() {
 
     private fun setContent() {
         if (::movie.isInitialized) {
-            movieImage.apply { setImage(movie.src) }
+            movieImage.apply { setImage(movie.src, thumbnail = false) }
             movieAgeCard.apply { setAgeColor(movie.mpaa_rating) }
             movieAge.apply {
                 text = if (movie.mpaa_rating.isEmpty()) "N/A"

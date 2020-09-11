@@ -1,6 +1,7 @@
 package com.pedro.schwarz.desafioyourdev.ui.fragment
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.*
 import android.widget.ProgressBar
 import androidx.appcompat.widget.SearchView
@@ -26,7 +27,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
+class MovieListFragment : Fragment(), SearchView.OnQueryTextListener, SearchView.OnCloseListener {
 
     private val controller by lazy { findNavController() }
     private val viewModel by viewModel<MovieListViewModel>()
@@ -166,30 +167,27 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
         searchView.apply {
             isSubmitButtonEnabled = true
             setOnQueryTextListener(this@MovieListFragment)
+            inputType = InputType.TYPE_CLASS_TEXT.or(InputType.TYPE_TEXT_FLAG_CAP_WORDS)
+            setOnCloseListener(this@MovieListFragment)
         }
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         query?.let {
-            if (it.trim().isEmpty()) {
-                fetchMovies()
-            } else {
+            if (it.trim().isNotEmpty()) {
                 fetchMoviesByTitle(query)
             }
         }
-
         return true
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        newText?.let {
-            if (it.trim().isEmpty()) {
-                fetchMovies()
-            } else {
-                fetchMoviesByTitle(newText)
-            }
-        }
         return true
+    }
+
+    override fun onClose(): Boolean {
+        fetchMovies()
+        return false
     }
 
     private fun fetchMoviesByTitle(title: String) {

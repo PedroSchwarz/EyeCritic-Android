@@ -65,6 +65,9 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieClient: M
         movieClient.fetchMoviesByTitle(
             title = title,
             onSuccess = { result ->
+                CoroutineScope(Dispatchers.IO).launch {
+                    movieDAO.insertMovie(result)
+                }
                 _movies.value = Success(data = result)
             },
             onFailure = {

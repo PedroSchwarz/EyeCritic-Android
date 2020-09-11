@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.pedro.schwarz.desafioyourdev.R
 import java.text.SimpleDateFormat
@@ -56,9 +57,14 @@ fun RecyclerView.setContent(
     adapter = itemsAdapter
 }
 
-fun ImageView.setImage(imageUrl: String) {
-    Glide.with(this.context).load(imageUrl).error(R.drawable.image_placeholder)
-        .placeholder(R.drawable.image_placeholder).into(this)
+fun ImageView.setImage(imageUrl: String, thumbnail: Boolean) {
+    if (thumbnail) {
+        Glide.with(this.context).load(imageUrl).apply(RequestOptions().override(130, 130)).error(R.drawable.image_placeholder)
+            .placeholder(R.drawable.image_placeholder).into(this)
+    } else {
+        Glide.with(this.context).load(imageUrl).error(R.drawable.image_placeholder)
+            .placeholder(R.drawable.image_placeholder).into(this)
+    }
 }
 
 fun FloatingActionButton.setImage(favorite: Boolean) {

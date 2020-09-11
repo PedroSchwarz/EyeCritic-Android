@@ -51,7 +51,7 @@ class MoviesAdapter(
                 }
                 itemView.findViewById<TextView>(R.id.item_movie_summary).text = movie.summary_short
                 itemView.findViewById<ImageView>(R.id.item_movie_image)
-                    .apply { setImage(movie.src) }
+                    .apply { setImage(movie.src, thumbnail = true) }
                 itemView.findViewById<FloatingActionButton>(R.id.item_movie_toggle_favorite_btn)
                     .apply {
                         setImage(movie.favorite)

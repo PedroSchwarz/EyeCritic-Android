@@ -16,6 +16,9 @@ interface MovieDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertMovie(movies: List<Movie>)
 
+    @Insert
+    fun insertMovie(movie: Movie)
+
     @Update
     fun updateMovie(movie: Movie)
 
