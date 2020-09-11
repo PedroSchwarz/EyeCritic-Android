@@ -3,7 +3,6 @@ package com.pedro.schwarz.desafioyourdev.ui.extension
 import android.content.res.ColorStateList
 import android.graphics.drawable.Icon
 import android.text.format.DateUtils
-import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
@@ -24,7 +23,7 @@ fun Fragment.showMessage(message: String) {
     Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
 }
 
-fun CardView.setAgeColor(age: String) {
+fun CardView.setRatingColor(age: String) {
     if (age.isNotEmpty()) {
         when (age) {
             "PG-13" -> {
@@ -37,8 +36,6 @@ fun CardView.setAgeColor(age: String) {
                 setCardBackgroundColor(ColorStateList.valueOf(context.getColor(R.color.colorSuccess)))
             }
         }
-    } else {
-        setCardBackgroundColor(ColorStateList.valueOf(context.getColor(R.color.colorLightGrey)))
     }
 }
 
@@ -57,9 +54,10 @@ fun RecyclerView.setContent(
     adapter = itemsAdapter
 }
 
-fun ImageView.setImage(imageUrl: String, thumbnail: Boolean) {
+fun ImageView.setImageSrc(imageUrl: String, thumbnail: Boolean) {
     if (thumbnail) {
-        Glide.with(this.context).load(imageUrl).apply(RequestOptions().override(130, 130)).error(R.drawable.image_placeholder)
+        Glide.with(this.context).load(imageUrl).apply(RequestOptions().override(130, 130))
+            .error(R.drawable.image_placeholder)
             .placeholder(R.drawable.image_placeholder).into(this)
     } else {
         Glide.with(this.context).load(imageUrl).error(R.drawable.image_placeholder)
@@ -67,7 +65,7 @@ fun ImageView.setImage(imageUrl: String, thumbnail: Boolean) {
     }
 }
 
-fun FloatingActionButton.setImage(favorite: Boolean) {
+fun FloatingActionButton.setFavoriteStateImage(favorite: Boolean) {
     if (favorite) {
         setImageIcon(Icon.createWithResource(this.context, R.drawable.ic_favorite))
     } else {
@@ -97,9 +95,4 @@ fun TextView.toLocaleDate(dateString: String) {
     val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     val date = format.parse(dateString)
     date?.let { text = DateUtils.getRelativeTimeSpanString(date.time) }
-}
-
-fun View.toggleVisibility(visible: Boolean) {
-    visibility = if (visible) View.VISIBLE
-    else View.INVISIBLE
 }
