@@ -93,5 +93,35 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieClient: M
         return _favoriteMovies
     }
 
-    fun fetchMovie(title: String) = movieDAO.fetchMovie(title)
+    fun fetchMovie(title: String): LiveData<Resource<Movie>> {
+        val liveData = MediatorLiveData<Resource<Movie>>()
+        liveData.addSource(movieDAO.fetchMovie(title)) { result ->
+            if (result == null) {
+                fetchMovieAPI(title, onSuccess = {
+                    liveData.value = Success(data = it)
+                }, onFailure = {
+                    liveData.value = Failure(error = it)
+                })
+            } else {
+                liveData.value = Success(data = result)
+            }
+        }
+        return liveData
+    }
+
+    private fun fetchMovieAPI(
+        title: String,
+        onSuccess: (result: Movie) -> Unit,
+        onFailure: (error: String) -> Unit
+    ) {
+        movieClient.fetchMoviesByTitle(title, onSuccess = {
+            if (it.isEmpty()) {
+                onFailure("Movie not found")
+            } else {
+                onSuccess(it[0])
+            }
+        }, onFailure = {
+            onFailure("Movie not found")
+        })
+    }
 }

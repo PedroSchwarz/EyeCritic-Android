@@ -17,6 +17,16 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
             _isLoading.value = value
         }
 
+    private val _isEmpty = MutableLiveData<Boolean>().also { it.value = false }
+    val isEmpty: LiveData<Boolean>
+        get() = _isEmpty
+    var setIsEmpty: Boolean = false
+        set(value) {
+            field = value
+            _isEmpty.value = value
+        }
+
+
     private val _isRefreshing = MutableLiveData<Boolean>().also { it.value = false }
     val isRefreshing: LiveData<Boolean>
         get() = _isRefreshing

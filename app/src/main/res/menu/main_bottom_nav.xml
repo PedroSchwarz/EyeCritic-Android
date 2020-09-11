@@ -5,11 +5,11 @@
     <item
         android:id="@+id/movieListFragment"
         android:icon="@drawable/ic_dashboard"
-        android:title="All Movies"
+        android:title="@string/bottom_nav_all_reviews"
         app:showAsAction="always" />
     <item
         android:id="@+id/favoriteMovieListFragment"
         android:icon="@drawable/ic_favorites_list"
-        android:title="Favorites"
+        android:title="@string/bottom_nav_favorites"
         app:showAsAction="always" />
 </menu>

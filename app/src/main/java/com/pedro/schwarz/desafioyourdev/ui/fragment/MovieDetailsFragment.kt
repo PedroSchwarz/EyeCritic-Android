@@ -9,12 +9,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.pedro.schwarz.desafioyourdev.R
 import com.pedro.schwarz.desafioyourdev.model.Movie
 import com.pedro.schwarz.desafioyourdev.repository.Failure
+import com.pedro.schwarz.desafioyourdev.repository.Resource
 import com.pedro.schwarz.desafioyourdev.repository.Success
 import com.pedro.schwarz.desafioyourdev.ui.extension.*
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.AppViewModel
@@ -25,6 +28,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MovieDetailsFragment : Fragment() {
 
+    private val controller by lazy { findNavController() }
     private val arguments by navArgs<MovieDetailsFragmentArgs>()
     private val title by lazy { arguments.title }
     private val viewModel by viewModel<MovieDetailsViewModel>()
@@ -32,6 +36,7 @@ class MovieDetailsFragment : Fragment() {
 
     private lateinit var movie: Movie
 
+    private lateinit var movieDetailsOverlay: ConstraintLayout
     private lateinit var movieImage: ImageView
     private lateinit var movieAgeCard: CardView
     private lateinit var movieAge: TextView
@@ -56,11 +61,19 @@ class MovieDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         appViewModel.setComponents = Components(appBar = true, bottomBar = false)
         initContent(view)
+        configIsLoadingListener()
         configOptionsBtns(view)
         fetchMovie()
     }
 
+    private fun configIsLoadingListener() {
+        viewModel.isLoading.observe(viewLifecycleOwner, { isLoading ->
+            movieDetailsOverlay.toggleVisibility(visible = isLoading)
+        })
+    }
+
     private fun initContent(view: View) {
+        movieDetailsOverlay = view.findViewById(R.id.movie_details_loading_overlay)
         movieImage = view.findViewById(R.id.movie_details_image)
         movieAgeCard = view.findViewById(R.id.movie_details_age_card)
         movieAge = view.findViewById(R.id.movie_details_age)
@@ -99,9 +112,19 @@ class MovieDetailsFragment : Fragment() {
     }
 
     private fun fetchMovie() {
-        viewModel.fetchMovie(title).observe(viewLifecycleOwner, { result ->
-            this.movie = result
-            setContent()
+        viewModel.setIsLoading = true
+        viewModel.fetchMovie(title).observe(viewLifecycleOwner, { result: Resource<Movie> ->
+            when (result) {
+                is Success -> {
+                    result.data?.let { this.movie = it }
+                    setContent()
+                }
+                is Failure -> {
+                    showMessage(getString(R.string.review_display_error_message))
+                    controller.popBackStack()
+                }
+            }
+            viewModel.setIsLoading = false
         })
     }
 
@@ -129,7 +152,7 @@ class MovieDetailsFragment : Fragment() {
         viewModel.toggleMovieFavorite(movie).observe(viewLifecycleOwner, { result ->
             when (result) {
                 is Success -> {
-                    showMessage("Added to favorites")
+                    showMessage(getString(R.string.added_to_favorites_message))
                 }
                 is Failure -> {
                     result.error?.let { showMessage(it) }
@@ -145,7 +168,8 @@ class MovieDetailsFragment : Fragment() {
             type = "text/plain"
         }
 
-        val shareIntent = Intent.createChooser(sendIntent, "Share article with")
+        val shareIntent =
+            Intent.createChooser(sendIntent, getString(R.string.share_article_with_message))
         startActivity(shareIntent)
     }
 

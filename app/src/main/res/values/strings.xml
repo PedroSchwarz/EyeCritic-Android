@@ -1,6 +1,23 @@
 <resources>
     <string name="app_name">Desafio YourDev</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="nav_reviews_label">Latest Movie Reviews</string>
+    <string name="nav_favorites_label">My Favorites</string>
+    <string name="nav_review_details">Movie Review Details</string>
+    <string name="movie_details_image">Movie Image</string>
+    <string name="movie_details_read_full_article">Read full article</string>
+    <string name="movie_details_published_in">"Published in "</string>
+    <string name="movie_details_by">"By "</string>
+    <string name="movie_image">Movie Image</string>
+    <string name="review_updated_message">Review updated</string>
+    <string name="added_to_favorites_message">Added to favorites</string>
+    <string name="share_article_with_message">Share article with</string>
+    <string name="list_updated_message">List updated</string>
+    <string name="bottom_nav_all_reviews">All Reviews</string>
+    <string name="bottom_nav_favorites">Favorites</string>
+    <string name="search">Search</string>
+    <string name="no_reviews_in_this_list">No reviews in this list</string>
+    <string name="no_item_in_list_image">No item in list image</string>
+    <string name="review_display_error_message">The review couldn\'t be displayed</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>
