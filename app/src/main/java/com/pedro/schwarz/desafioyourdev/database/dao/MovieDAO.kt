@@ -16,6 +16,9 @@ interface MovieDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertMovie(movies: List<Movie>)
 
+    @Insert
+    fun insertMovie(movie: Movie)
+
     @Update
     fun updateMovie(movie: Movie)
 
@@ -24,4 +27,7 @@ interface MovieDAO {
 
     @Query("SELECT * FROM movie WHERE display_title = :title")
     fun fetchMovie(title: String): LiveData<Movie>
+
+    @Delete
+    fun deleteMovie(movie: Movie)
 }

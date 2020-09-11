@@ -20,4 +20,6 @@ class FavoriteMovieListViewModel(private val movieRepository: MovieRepository) :
     fun fetchFavoriteMovies() = movieRepository.fetchFavoriteMovies()
 
     fun toggleMovieFavorite(movie: Movie) = movieRepository.toggleMovieFavorite(movie)
+
+    fun deleteMovie(movie: Movie) = movieRepository.deleteMovie(movie)
 }

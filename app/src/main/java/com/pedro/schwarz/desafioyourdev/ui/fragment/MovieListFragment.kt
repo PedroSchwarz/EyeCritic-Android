@@ -1,42 +1,38 @@
 package com.pedro.schwarz.desafioyourdev.ui.fragment
 
+import android.app.AlertDialog
 import android.os.Bundle
+import android.text.InputType
 import android.view.*
-import android.widget.ProgressBar
 import androidx.appcompat.widget.SearchView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.pedro.schwarz.desafioyourdev.R
+import com.pedro.schwarz.desafioyourdev.databinding.FragmentMovieListBinding
 import com.pedro.schwarz.desafioyourdev.model.Movie
 import com.pedro.schwarz.desafioyourdev.repository.Failure
 import com.pedro.schwarz.desafioyourdev.repository.Success
 import com.pedro.schwarz.desafioyourdev.ui.extension.setContent
 import com.pedro.schwarz.desafioyourdev.ui.extension.showMessage
-import com.pedro.schwarz.desafioyourdev.ui.extension.toggleVisibility
 import com.pedro.schwarz.desafioyourdev.ui.recyclerview.MoviesAdapter
+import com.pedro.schwarz.desafioyourdev.ui.recyclerview.callback.SwipeCallback
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.AppViewModel
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.Components
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.MovieListViewModel
-import jp.wasabeef.recyclerview.animators.OvershootInLeftAnimator
+import jp.wasabeef.recyclerview.animators.FlipInBottomXAnimator
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
+class MovieListFragment : Fragment(), SearchView.OnQueryTextListener, SearchView.OnCloseListener {
 
     private val controller by lazy { findNavController() }
     private val viewModel by viewModel<MovieListViewModel>()
     private val moviesAdapter by inject<MoviesAdapter>()
     private val appViewModel by sharedViewModel<AppViewModel>()
-
-    private lateinit var movieListRefresh: SwipeRefreshLayout
-    private lateinit var movieList: RecyclerView
-    private lateinit var loadingSpinner: ProgressBar
-    private lateinit var emptyList: ConstraintLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,56 +103,63 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
         })
     }
 
+    private fun fetchMoviesByTitle(title: String) {
+        viewModel.fetchMoviesByTitle(title)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_movie_list, container, false)
+        val binding = FragmentMovieListBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
+        binding.onListRefresh = SwipeRefreshLayout.OnRefreshListener { refreshMovies() }
+        binding.movieList.apply {
+            setContent(false, StaggeredGridLayoutManager.VERTICAL, false, moviesAdapter)
+            itemAnimator = FlipInBottomXAnimator().apply { addDuration = 300 }
+            val touchHelper =
+                ItemTouchHelper(SwipeCallback(this@MovieListFragment::deleteMovie))
+            touchHelper.attachToRecyclerView(this)
+        }
+        return binding.root
+    }
+
+    private fun deleteMovie(position: Int) {
+        val movie = moviesAdapter.currentList[position]
+        showConfirmDelete(
+            movie.display_title,
+            onCancel = { moviesAdapter.notifyDataSetChanged() },
+            onConfirm = {
+                viewModel.deleteMovie(movie).observe(viewLifecycleOwner, { result ->
+                    when (result) {
+                        is Success -> {
+                            showMessage(getString(R.string.review_deleted_message))
+                        }
+                        is Failure -> {
+                            result.error?.let { showMessage(it) }
+                        }
+                    }
+                })
+            },
+        )
+
+    }
+
+    private fun showConfirmDelete(title: String, onCancel: () -> Unit, onConfirm: () -> Unit) {
+        AlertDialog.Builder(requireContext()).apply {
+            setCancelable(false)
+            setTitle(getString(R.string.delete_review_dialog_title))
+            setMessage(getString(R.string.delete_review_dialog_message_entry) + title + getString(R.string.delete_review_dialog_message_final))
+            setPositiveButton(getString(R.string.delete_review_dialog_delete_action)) { _, _ -> onConfirm() }
+            setNegativeButton(getString(R.string.delete_review_dialog_cancel_action)) { _, _ -> onCancel() }
+        }.show()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         appViewModel.setComponents = Components(appBar = true, bottomBar = true)
-        configListRefresh(view)
-        configMovieList(view)
-        setIsLoadingListener(view)
-        setIsEmptyListener(view)
-        setIsRefreshingListener()
-    }
-
-    private fun setIsEmptyListener(view: View) {
-        emptyList = view.findViewById(R.id.movie_list_empty_message)
-        viewModel.isEmpty.observe(viewLifecycleOwner, { isEmpty ->
-            emptyList.toggleVisibility(visible = isEmpty && !viewModel.setIsLoading)
-        })
-    }
-
-    private fun setIsRefreshingListener() {
-        viewModel.isRefreshing.observe(viewLifecycleOwner, { isRefreshing ->
-            movieListRefresh.isRefreshing = isRefreshing
-        })
-    }
-
-    private fun setIsLoadingListener(view: View) {
-        loadingSpinner = view.findViewById(R.id.movie_list_loading)
-        viewModel.isLoading.observe(viewLifecycleOwner, { isLoading ->
-            movieList.toggleVisibility(visible = !isLoading)
-            loadingSpinner.toggleVisibility(visible = isLoading)
-        })
-    }
-
-    private fun configMovieList(view: View) {
-        movieList = view.findViewById<RecyclerView>(R.id.movie_list).apply {
-            setContent(false, StaggeredGridLayoutManager.VERTICAL, false, moviesAdapter)
-            itemAnimator = OvershootInLeftAnimator().apply { addDuration = 300 }
-        }
-    }
-
-    private fun configListRefresh(view: View) {
-        movieListRefresh = view.findViewById<SwipeRefreshLayout>(R.id.movie_list_refresh).apply {
-            setOnRefreshListener { refreshMovies() }
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -165,34 +168,27 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
         val searchView = search.actionView as SearchView
         searchView.apply {
             isSubmitButtonEnabled = true
+            inputType = InputType.TYPE_CLASS_TEXT.or(InputType.TYPE_TEXT_FLAG_CAP_WORDS)
             setOnQueryTextListener(this@MovieListFragment)
+            setOnCloseListener(this@MovieListFragment)
         }
     }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
         query?.let {
-            if (it.trim().isEmpty()) {
-                fetchMovies()
-            } else {
+            if (it.trim().isNotEmpty()) {
                 fetchMoviesByTitle(query)
             }
         }
-
         return true
     }
 
     override fun onQueryTextChange(newText: String?): Boolean {
-        newText?.let {
-            if (it.trim().isEmpty()) {
-                fetchMovies()
-            } else {
-                fetchMoviesByTitle(newText)
-            }
-        }
         return true
     }
 
-    private fun fetchMoviesByTitle(title: String) {
-        viewModel.fetchMoviesByTitle(title)
+    override fun onClose(): Boolean {
+        fetchMovies()
+        return false
     }
 }
