@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +15,7 @@ import com.pedro.schwarz.desafioyourdev.repository.Failure
 import com.pedro.schwarz.desafioyourdev.repository.Success
 import com.pedro.schwarz.desafioyourdev.ui.extension.setContent
 import com.pedro.schwarz.desafioyourdev.ui.extension.showMessage
+import com.pedro.schwarz.desafioyourdev.ui.extension.toggleVisibility
 import com.pedro.schwarz.desafioyourdev.ui.recyclerview.MoviesAdapter
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.AppViewModel
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.Components
@@ -30,6 +32,7 @@ class FavoriteMovieListFragment : Fragment() {
     private val appViewModel by sharedViewModel<AppViewModel>()
 
     private lateinit var movieList: RecyclerView
+    private lateinit var emptyList: ConstraintLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +65,7 @@ class FavoriteMovieListFragment : Fragment() {
         viewModel.toggleMovieFavorite(movie).observe(this, { result ->
             when (result) {
                 is Success -> {
-                    showMessage("Movie updated")
+                    showMessage(getString(R.string.review_updated_message))
                 }
                 is Failure -> {
                     result.error?.let { showMessage(it) }
@@ -75,6 +78,7 @@ class FavoriteMovieListFragment : Fragment() {
         viewModel.fetchFavoriteMovies().observe(this, { result ->
             when (result) {
                 is Success -> {
+                    result.data?.let { viewModel.setIsEmpty = it.isEmpty() }
                     moviesAdapter.submitList(result.data)
                 }
                 is Failure -> {
@@ -95,6 +99,14 @@ class FavoriteMovieListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         appViewModel.setComponents = Components(appBar = true, bottomBar = true)
         configMovieList(view)
+        setIsEmptyListener(view)
+    }
+
+    private fun setIsEmptyListener(view: View) {
+        emptyList = view.findViewById(R.id.favorite_movie_list_empty)
+        viewModel.isEmpty.observe(viewLifecycleOwner, { isEmpty ->
+            emptyList.toggleVisibility(visible = isEmpty)
+        })
     }
 
     private fun configMovieList(view: View) {

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.*
 import android.widget.ProgressBar
 import androidx.appcompat.widget.SearchView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -35,6 +36,7 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
     private lateinit var movieListRefresh: SwipeRefreshLayout
     private lateinit var movieList: RecyclerView
     private lateinit var loadingSpinner: ProgressBar
+    private lateinit var emptyList: ConstraintLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +67,7 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
         viewModel.toggleMovieFavorite(movie).observe(this, { result ->
             when (result) {
                 is Success -> {
-                    showMessage("Movie updated")
+                    showMessage(getString(R.string.review_updated_message))
                 }
                 is Failure -> {
                     result.error?.let { showMessage(it) }
@@ -79,6 +81,7 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
         viewModel.fetchMovies().observe(this, { result ->
             when (result) {
                 is Success -> {
+                    result.data?.let { viewModel.setIsEmpty = it.isEmpty() }
                     moviesAdapter.submitList(result.data)
                 }
                 is Failure -> {
@@ -95,7 +98,7 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
             when (result) {
                 is Success -> {
                     viewModel.setIsRefreshing = false
-                    showMessage("List updated")
+                    showMessage(getString(R.string.list_updated_message))
                 }
                 is Failure -> {
                     viewModel.setIsRefreshing = false
@@ -118,7 +121,15 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener {
         configListRefresh(view)
         configMovieList(view)
         setIsLoadingListener(view)
+        setIsEmptyListener(view)
         setIsRefreshingListener()
+    }
+
+    private fun setIsEmptyListener(view: View) {
+        emptyList = view.findViewById(R.id.movie_list_empty_message)
+        viewModel.isEmpty.observe(viewLifecycleOwner, { isEmpty ->
+            emptyList.toggleVisibility(visible = isEmpty && !viewModel.setIsLoading)
+        })
     }
 
     private fun setIsRefreshingListener() {

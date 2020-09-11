@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Desafio YourDev</string>
+    <string name="nav_reviews_label">Reviews de Filmes Mais Recentes</string>
+    <string name="nav_favorites_label">Meu Favoritos</string>
+    <string name="nav_review_details">Detalhes da Review do Filme</string>
+    <string name="movie_details_image">Imagem do Filme</string>
+    <string name="movie_details_read_full_article">Leia o artigo inteiro</string>
+    <string name="movie_details_published_in">"Publicado em "</string>
+    <string name="movie_details_by">"Por "</string>
+    <string name="movie_image">Imagem do Filme</string>
+    <string name="review_updated_message">Review atualizada</string>
+    <string name="added_to_favorites_message">Adicionado aos favoritos</string>
+    <string name="share_article_with_message">Compartilhar artigo com</string>
+    <string name="list_updated_message">Lista atualizada</string>
+    <string name="bottom_nav_all_reviews">Todas Reviews</string>
+    <string name="bottom_nav_favorites">Favoritos</string>
+    <string name="search">Pesquisar</string>
+    <string name="no_reviews_in_this_list">Nenhuma review nesta lista</string>
+    <string name="no_item_in_list_image">Imagem de nenhum item na lista</string>
+    <string name="review_display_error_message">A Review não pode ser exibida</string>
+</resources>

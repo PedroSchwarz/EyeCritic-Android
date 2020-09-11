@@ -5,8 +5,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.pedro.schwarz.desafioyourdev.model.Movie
 import com.pedro.schwarz.desafioyourdev.repository.MovieRepository
+import com.pedro.schwarz.desafioyourdev.repository.Resource
 
 class MovieDetailsViewModel(private val movieRepository: MovieRepository) : ViewModel() {
+
+    private val _isLoading = MutableLiveData<Boolean>().also { it.value = true }
+    val isLoading: LiveData<Boolean>
+        get() = _isLoading
+    var setIsLoading: Boolean = true
+        set(value) {
+            field = value
+            _isLoading.value = value
+        }
 
     private val _isMenuOpen = MutableLiveData<Boolean>().also { it.value = false }
     val isMenuOpen: LiveData<Boolean>
@@ -17,7 +27,7 @@ class MovieDetailsViewModel(private val movieRepository: MovieRepository) : View
             _isMenuOpen.value = value
         }
 
-    fun fetchMovie(title: String) = movieRepository.fetchMovie(title)
+    fun fetchMovie(title: String): LiveData<Resource<Movie>> = movieRepository.fetchMovie(title)
 
     fun toggleMovieFavorite(movie: Movie) = movieRepository.toggleMovieFavorite(movie)
 }

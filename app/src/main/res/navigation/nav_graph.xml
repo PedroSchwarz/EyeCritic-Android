@@ -8,8 +8,8 @@
     <fragment
         android:id="@+id/movieListFragment"
         android:name="com.pedro.schwarz.desafioyourdev.ui.fragment.MovieListFragment"
-        android:label="fragment_movie_list"
-        tools:layout="@layout/fragment_movie_list" >
+        android:label="@string/nav_reviews_label"
+        tools:layout="@layout/fragment_movie_list">
         <action
             android:id="@+id/action_movieListFragment_to_movieDetailsFragment"
             app:destination="@id/movieDetailsFragment"
@@ -21,8 +21,8 @@
     <fragment
         android:id="@+id/favoriteMovieListFragment"
         android:name="com.pedro.schwarz.desafioyourdev.ui.fragment.FavoriteMovieListFragment"
-        android:label="fragment_favorite_movie_list"
-        tools:layout="@layout/fragment_favorite_movie_list" >
+        android:label="@string/nav_favorites_label"
+        tools:layout="@layout/fragment_favorite_movie_list">
         <action
             android:id="@+id/action_favoriteMovieListFragment_to_movieDetailsFragment"
             app:destination="@id/movieDetailsFragment"
@@ -34,8 +34,9 @@
     <fragment
         android:id="@+id/movieDetailsFragment"
         android:name="com.pedro.schwarz.desafioyourdev.ui.fragment.MovieDetailsFragment"
-        android:label="MovieDetailsFragment" >
-        <argument android:name="title"
+        android:label="@string/nav_review_details">
+        <argument
+            android:name="title"
             app:argType="string" />
     </fragment>
 </navigation>
