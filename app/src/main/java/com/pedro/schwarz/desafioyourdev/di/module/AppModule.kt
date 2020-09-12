@@ -16,7 +16,8 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-private const val DATABASE_NAME = "desafio_your_dev"
+private const val DATABASE_NAME = "eye_critic"
+private const val API_BASE_URL = "https://api.nytimes.com/svc/movies/v2/reviews/"
 
 val databaseModule = module {
     single<AppDatabase> {
@@ -27,7 +28,7 @@ val databaseModule = module {
 val retrofitModule = module {
     single<Retrofit> {
         Retrofit.Builder()
-            .baseUrl("https://api.nytimes.com/svc/movies/v2/reviews/")
+            .baseUrl(API_BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

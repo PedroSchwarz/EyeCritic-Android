@@ -7,7 +7,7 @@ import com.pedro.schwarz.desafioyourdev.model.Movie
 @Dao
 interface MovieDAO {
 
-    @Query("SELECT * FROM movie")
+    @Query("SELECT * FROM movie ORDER BY publication_date DESC")
     fun fetchMovies(): LiveData<List<Movie>>
 
     @Query("SELECT * FROM movie WHERE display_title LIKE :title")
