@@ -1,6 +1,5 @@
 package com.pedro.schwarz.desafioyourdev.ui.fragment
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +13,7 @@ import com.pedro.schwarz.desafioyourdev.databinding.FragmentFavoriteMovieListBin
 import com.pedro.schwarz.desafioyourdev.model.Movie
 import com.pedro.schwarz.desafioyourdev.repository.Failure
 import com.pedro.schwarz.desafioyourdev.repository.Success
+import com.pedro.schwarz.desafioyourdev.ui.dialog.showDeleteMovieDialog
 import com.pedro.schwarz.desafioyourdev.ui.extension.setContent
 import com.pedro.schwarz.desafioyourdev.ui.extension.showMessage
 import com.pedro.schwarz.desafioyourdev.ui.recyclerview.MoviesAdapter
@@ -111,9 +111,13 @@ class FavoriteMovieListFragment : Fragment() {
 
     private fun deleteMovie(position: Int) {
         val movie = moviesAdapter.currentList[position]
-        showConfirmDelete(
+        showDeleteMovieDialog(
+            requireContext(),
             movie.display_title,
-            onCancel = { moviesAdapter.notifyDataSetChanged() },
+            onCancel = {
+                moviesAdapter.notifyItemRemoved(position)
+                moviesAdapter.notifyItemInserted(position)
+            },
             onConfirm = {
                 viewModel.deleteMovie(movie).observe(viewLifecycleOwner, { result ->
                     when (result) {
@@ -127,16 +131,5 @@ class FavoriteMovieListFragment : Fragment() {
                 })
             },
         )
-
-    }
-
-    private fun showConfirmDelete(title: String, onCancel: () -> Unit, onConfirm: () -> Unit) {
-        AlertDialog.Builder(requireContext()).apply {
-            setCancelable(false)
-            setTitle(getString(R.string.delete_review_dialog_title))
-            setMessage(getString(R.string.delete_review_dialog_message_entry) + title + getString(R.string.delete_review_dialog_message_final))
-            setPositiveButton(getString(R.string.delete_review_dialog_delete_action)) { _, _ -> onConfirm() }
-            setNegativeButton(getString(R.string.delete_review_dialog_cancel_action)) { _, _ -> onCancel() }
-        }.show()
     }
 }

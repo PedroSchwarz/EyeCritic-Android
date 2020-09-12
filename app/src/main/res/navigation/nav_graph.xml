@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/movieListFragment">
+    app:startDestination="@id/splashScreenFragment">
 
     <fragment
         android:id="@+id/movieListFragment"
@@ -38,5 +38,16 @@
         <argument
             android:name="title"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/splashScreenFragment"
+        android:name="com.pedro.schwarz.desafioyourdev.ui.fragment.SplashScreenFragment"
+        android:label="fragment_splash_screen"
+        tools:layout="@layout/fragment_splash_screen" >
+        <action
+            android:id="@+id/action_splashScreenFragment_to_movieListFragment"
+            app:destination="@id/movieListFragment"
+            app:popUpTo="@id/splashScreenFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>
