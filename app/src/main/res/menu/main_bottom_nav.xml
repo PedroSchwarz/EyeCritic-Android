@@ -8,6 +8,11 @@
         android:title="@string/bottom_nav_all_reviews"
         app:showAsAction="always" />
     <item
+        android:id="@+id/searchMovieFragment"
+        android:icon="@drawable/ic_search"
+        android:title="@string/search"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/favoriteMovieListFragment"
         android:icon="@drawable/ic_favorites_list"
         android:title="@string/bottom_nav_favorites"

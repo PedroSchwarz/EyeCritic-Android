@@ -12,6 +12,10 @@
             type="androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener" />
 
         <variable
+            name="onFetchLatestReviews"
+            type="android.view.View.OnClickListener" />
+
+        <variable
             name="viewModel"
             type="com.pedro.schwarz.desafioyourdev.ui.viewmodel.MovieListViewModel" />
     </data>
@@ -30,7 +34,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:onRefreshListener="@{onListRefresh}"
-            app:setIsRefreshing="@{viewModel.isRefreshing}">
+            app:setIsRefreshing="@{viewModel.isRefreshing}"
+            tools:visibility="visible">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/movie_list"
@@ -65,5 +70,26 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="@{onFetchLatestReviews}"
+            android:text="@string/movie_list_get_latest_reviews"
+            android:textColor="@color/colorLight"
+            app:backgroundTint="@color/colorAccent"
+            app:icon="@drawable/ic_refresh"
+            app:iconTint="@color/colorLight"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/ic_refresh"
+            app:toggleVisibility="@{viewModel.isEmpty}" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

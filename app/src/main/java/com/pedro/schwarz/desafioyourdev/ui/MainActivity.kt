@@ -17,7 +17,8 @@ class MainActivity : AppCompatActivity() {
     private val appBarConfiguration by lazy {
         AppBarConfiguration.Builder(
             R.id.movieListFragment,
-            R.id.favoriteMovieListFragment
+            R.id.favoriteMovieListFragment,
+            R.id.searchMovieFragment,
         ).build()
     }
     private val appViewModel by viewModel<AppViewModel>()

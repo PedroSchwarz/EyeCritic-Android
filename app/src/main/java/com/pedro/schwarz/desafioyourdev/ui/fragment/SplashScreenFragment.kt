@@ -28,7 +28,7 @@ class SplashScreenFragment : Fragment() {
         appViewModel.setComponents = Components(appBar = false, bottomBar = false)
 
         CoroutineScope(Dispatchers.IO).launch {
-            delay(3000)
+            delay(1500)
             withContext(Dispatchers.Main) {
                 val directions =
                     SplashScreenFragmentDirections.actionSplashScreenFragmentToMovieListFragment()

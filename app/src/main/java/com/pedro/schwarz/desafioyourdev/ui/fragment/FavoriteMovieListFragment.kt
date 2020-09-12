@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.pedro.schwarz.desafioyourdev.R
 import com.pedro.schwarz.desafioyourdev.databinding.FragmentFavoriteMovieListBinding
@@ -25,13 +26,14 @@ import jp.wasabeef.recyclerview.animators.FlipInBottomXAnimator
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class FavoriteMovieListFragment : Fragment() {
 
     private val controller by lazy { findNavController() }
     private val viewModel by viewModel<FavoriteMovieListViewModel>()
-    private val moviesAdapter by inject<MoviesAdapter>()
     private val appViewModel by sharedViewModel<AppViewModel>()
+    private val moviesAdapter by inject<MoviesAdapter> { parametersOf(true) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,16 +94,28 @@ class FavoriteMovieListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentFavoriteMovieListBinding.inflate(inflater, container, false)
+        setBinding(binding)
+        return binding.root
+    }
+
+    private fun setBinding(binding: FragmentFavoriteMovieListBinding) {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
+        configList(binding)
+    }
+
+    private fun configList(binding: FragmentFavoriteMovieListBinding) {
         binding.favoriteMovieList.apply {
             setContent(false, StaggeredGridLayoutManager.VERTICAL, false, moviesAdapter)
             itemAnimator = FlipInBottomXAnimator().apply { addDuration = 300 }
-            val touchHelper =
-                ItemTouchHelper(SwipeCallback(this@FavoriteMovieListFragment::deleteMovie))
-            touchHelper.attachToRecyclerView(this)
+            configSwipe()
         }
-        return binding.root
+    }
+
+    private fun RecyclerView.configSwipe() {
+        val touchHelper =
+            ItemTouchHelper(SwipeCallback(this@FavoriteMovieListFragment::deleteMovie))
+        touchHelper.attachToRecyclerView(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -114,10 +128,7 @@ class FavoriteMovieListFragment : Fragment() {
         showDeleteMovieDialog(
             requireContext(),
             movie.display_title,
-            onCancel = {
-                moviesAdapter.notifyItemRemoved(position)
-                moviesAdapter.notifyItemInserted(position)
-            },
+            onCancel = { reloadData(position) },
             onConfirm = {
                 viewModel.deleteMovie(movie).observe(viewLifecycleOwner, { result ->
                     when (result) {
@@ -131,5 +142,10 @@ class FavoriteMovieListFragment : Fragment() {
                 })
             },
         )
+    }
+
+    private fun reloadData(position: Int) {
+        moviesAdapter.notifyItemRemoved(position)
+        moviesAdapter.notifyItemInserted(position)
     }
 }

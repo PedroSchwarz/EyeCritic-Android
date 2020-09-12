@@ -52,6 +52,7 @@ class MovieClient(private val movieService: MovieService) {
         )
     }
 
+    // Convert API response data to usable database Movie Entity
     private fun convertToMovies(result: List<MovieResult>): List<Movie> {
         val movies = mutableListOf<Movie>()
         for (movieResult in result) {

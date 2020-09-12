@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.pedro.schwarz.desafioyourdev.R
 import com.pedro.schwarz.desafioyourdev.databinding.FragmentMovieDetailsBinding
 import com.pedro.schwarz.desafioyourdev.model.Movie
@@ -21,6 +20,7 @@ import com.pedro.schwarz.desafioyourdev.ui.extension.showMessage
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.AppViewModel
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.Components
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.MovieDetailsViewModel
+import org.jetbrains.annotations.NotNull
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -33,10 +33,6 @@ class MovieDetailsFragment : Fragment() {
     private val appViewModel by sharedViewModel<AppViewModel>()
 
     private val movieData = MovieData()
-
-    private lateinit var moreOptionBtn: FloatingActionButton
-    private lateinit var toggleFavoriteBtn: FloatingActionButton
-    private lateinit var shareBtn: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,16 +60,36 @@ class MovieDetailsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentMovieDetailsBinding.inflate(inflater, container, false)
+        setBinding(binding)
+        return binding.root
+    }
+
+    private fun setBinding(binding: FragmentMovieDetailsBinding) {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         binding.movie = movieData
-        binding.onGoToArticle = View.OnClickListener { goToArticle() }
-        binding.onShareArticle = View.OnClickListener { shareArticle() }
-        binding.onToggleFavorite =
-            View.OnClickListener { movieData.toMovie()?.let { toggleMovieFavorite(it) } }
+        handleOnGoToArticle(binding)
+        handleOnShareArticle(binding)
+        handleOnToggleFavorite(binding)
+        handleOnToggleMenu(binding)
+    }
+
+    private fun handleOnToggleMenu(binding: FragmentMovieDetailsBinding) {
         binding.onToggleMenu =
             View.OnClickListener { viewModel.setIsMenuOpen = !viewModel.setIsMenuOpen }
-        return binding.root
+    }
+
+    private fun handleOnToggleFavorite(binding: FragmentMovieDetailsBinding) {
+        binding.onToggleFavorite =
+            View.OnClickListener { movieData.toMovie()?.let { toggleMovieFavorite(it) } }
+    }
+
+    private fun handleOnShareArticle(binding: FragmentMovieDetailsBinding) {
+        binding.onShareArticle = View.OnClickListener { shareArticle() }
+    }
+
+    private fun handleOnGoToArticle(binding: FragmentMovieDetailsBinding) {
+        binding.onGoToArticle = View.OnClickListener { goToArticle() }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

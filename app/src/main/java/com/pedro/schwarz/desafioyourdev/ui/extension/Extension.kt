@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.pedro.schwarz.desafioyourdev.R
 import java.text.SimpleDateFormat
@@ -83,6 +84,16 @@ fun FloatingActionButton.toggleRotateAnimation(isMenuOpen: Boolean) {
 
 fun FloatingActionButton.toggleVisibilityAnimation(isMenuOpen: Boolean) {
     if (isMenuOpen) {
+        isClickable = true
+        show()
+    } else {
+        isClickable = false
+        hide()
+    }
+}
+
+fun ExtendedFloatingActionButton.toggleVisibilityAnimation(isEmpty: Boolean) {
+    if (isEmpty) {
         isClickable = true
         show()
     } else {

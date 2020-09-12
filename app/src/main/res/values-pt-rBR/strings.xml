@@ -21,11 +21,20 @@
     <string name="review_display_error_message">A Review não pode ser exibida</string>
     <string name="delete_review_dialog_title">Deletar Review da Lista</string>
     <string name="delete_review_dialog_message_entry">"Tem certeza que deseja remover "</string>
-    <string name="delete_review_dialog_message_final">" ?"</string>
+    <string name="delete_review_dialog_message_final">\?</string>
     <string name="delete_review_dialog_delete_action">DELETAR</string>
     <string name="delete_review_dialog_cancel_action">CANCELAR</string>
     <string name="review_deleted_message">Review deletada</string>
     <string name="eye_critic">Eye Critic</string>
     <string name="the_new_york_times_challenge">Desafio The New York Times</string>
     <string name="developed_by">Desenvolvido por</string>
+    <string name="app_logo">Logo do App</string>
+    <string name="movie_list_menu_delete_all">Deletar Tudo</string>
+    <string name="delete_all_reviews_dialog_title">Deletar Todas Reviews</string>
+    <string name="delete_all_reviews_dialog_message">Tem certeza que deseja remover todas as reviews da lista?</string>
+    <string name="all_reviews_deleted_message">Todas reviews deletadas</string>
+    <string name="movie_list_get_latest_reviews">Buscar Últimas Reviews</string>
+    <string name="search_movie_search">Buscar...</string>
+    <string name="search_movie_empty_title_message">O título não pode ser vazio</string>
+    <string name="nav_search_reviews">Buscar Reviews</string>
 </resources>
