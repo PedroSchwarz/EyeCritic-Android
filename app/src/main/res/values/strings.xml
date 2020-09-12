@@ -30,5 +30,14 @@
     <string name="the_new_york_times_challenge">The New York Times Challenge</string>
     <string name="developed_by">Developed By</string>
     <string name="app_logo">App Logo</string>
+    <string name="movie_list_menu_delete_all">Delete All</string>
+    <string name="delete_all_reviews_dialog_title">Delete All Reviews</string>
+    <string name="delete_all_reviews_dialog_message">Are you sure you want to delete all reviews from the list?</string>
+    <string name="all_reviews_deleted_message">All reviews deleted</string>
+    <string name="movie_list_get_latest_reviews">Get Latest Reviews</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="search_movie_search">Search...</string>
+    <string name="search_movie_empty_title_message">The title cannot be empty</string>
+    <string name="nav_search_reviews">Search Reviews</string>
     <!-- TODO: Remove or change this placeholder text -->
 </resources>

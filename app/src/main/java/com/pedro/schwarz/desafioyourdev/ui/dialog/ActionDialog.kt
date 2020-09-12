@@ -22,3 +22,16 @@ fun showDeleteMovieDialog(
         setNegativeButton(context.getString(R.string.delete_review_dialog_cancel_action)) { _, _ -> onCancel() }
     }.show()
 }
+
+fun showDeleteAllMoviesDialog(
+    context: Context,
+    onConfirm: () -> Unit
+) {
+    AlertDialog.Builder(context).apply {
+        setCancelable(false)
+        setTitle(context.getString(R.string.delete_all_reviews_dialog_title))
+        setMessage(context.getString(R.string.delete_all_reviews_dialog_message))
+        setPositiveButton(context.getString(R.string.delete_review_dialog_delete_action)) { _, _ -> onConfirm() }
+        setNegativeButton(context.getString(R.string.delete_review_dialog_cancel_action)) { _, _ -> }
+    }.show()
+}

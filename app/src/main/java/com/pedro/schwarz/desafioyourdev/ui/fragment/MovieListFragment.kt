@@ -1,19 +1,20 @@
 package com.pedro.schwarz.desafioyourdev.ui.fragment
 
 import android.os.Bundle
-import android.text.InputType
 import android.view.*
-import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.pedro.schwarz.desafioyourdev.R
 import com.pedro.schwarz.desafioyourdev.databinding.FragmentMovieListBinding
 import com.pedro.schwarz.desafioyourdev.model.Movie
 import com.pedro.schwarz.desafioyourdev.repository.Failure
+import com.pedro.schwarz.desafioyourdev.repository.Resource
 import com.pedro.schwarz.desafioyourdev.repository.Success
+import com.pedro.schwarz.desafioyourdev.ui.dialog.showDeleteAllMoviesDialog
 import com.pedro.schwarz.desafioyourdev.ui.dialog.showDeleteMovieDialog
 import com.pedro.schwarz.desafioyourdev.ui.extension.setContent
 import com.pedro.schwarz.desafioyourdev.ui.extension.showMessage
@@ -26,13 +27,14 @@ import jp.wasabeef.recyclerview.animators.FlipInBottomXAnimator
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-class MovieListFragment : Fragment(), SearchView.OnQueryTextListener, SearchView.OnCloseListener {
+class MovieListFragment : Fragment() {
 
     private val controller by lazy { findNavController() }
     private val viewModel by viewModel<MovieListViewModel>()
-    private val moviesAdapter by inject<MoviesAdapter>()
     private val appViewModel by sharedViewModel<AppViewModel>()
+    private val moviesAdapter by inject<MoviesAdapter> { parametersOf(true) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,7 +79,7 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener, SearchView
         viewModel.fetchMovies().observe(this, { result ->
             when (result) {
                 is Success -> {
-                    result.data?.let { viewModel.setIsEmpty = it.isEmpty() }
+                    setEmptyList(result)
                     moviesAdapter.submitList(result.data)
                 }
                 is Failure -> {
@@ -86,6 +88,10 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener, SearchView
             }
             viewModel.setIsLoading = false
         })
+    }
+
+    private fun setEmptyList(result: Resource<List<Movie>>) {
+        result.data?.let { viewModel.setIsEmpty = it.isEmpty() }
     }
 
     private fun refreshMovies() {
@@ -103,27 +109,44 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener, SearchView
         })
     }
 
-    private fun fetchMoviesByTitle(title: String) {
-        viewModel.fetchMoviesByTitle(title)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
         val binding = FragmentMovieListBinding.inflate(inflater, container, false)
+        setBinding(binding)
+        return binding.root
+    }
+
+    private fun setBinding(binding: FragmentMovieListBinding) {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        binding.onListRefresh = SwipeRefreshLayout.OnRefreshListener { refreshMovies() }
+        handleOnRefresh(binding)
+        handleOnFetchLastestReviews(binding)
+        configList(binding)
+    }
+
+    private fun configList(binding: FragmentMovieListBinding) {
         binding.movieList.apply {
             setContent(false, StaggeredGridLayoutManager.VERTICAL, false, moviesAdapter)
             itemAnimator = FlipInBottomXAnimator().apply { addDuration = 300 }
-            val touchHelper =
-                ItemTouchHelper(SwipeCallback(this@MovieListFragment::deleteMovie))
-            touchHelper.attachToRecyclerView(this)
+            configSwipe()
         }
-        return binding.root
+    }
+
+    private fun RecyclerView.configSwipe() {
+        val touchHelper =
+            ItemTouchHelper(SwipeCallback(this@MovieListFragment::deleteMovie))
+        touchHelper.attachToRecyclerView(this)
+    }
+
+    private fun handleOnFetchLastestReviews(binding: FragmentMovieListBinding) {
+        binding.onFetchLatestReviews = View.OnClickListener { refreshMovies() }
+    }
+
+    private fun handleOnRefresh(binding: FragmentMovieListBinding) {
+        binding.onListRefresh = SwipeRefreshLayout.OnRefreshListener { refreshMovies() }
     }
 
     private fun deleteMovie(position: Int) {
@@ -131,10 +154,7 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener, SearchView
         showDeleteMovieDialog(
             requireContext(),
             movie.display_title,
-            onCancel = {
-                moviesAdapter.notifyItemRemoved(position)
-                moviesAdapter.notifyItemInserted(position)
-            },
+            onCancel = { reloadData(position) },
             onConfirm = {
                 viewModel.deleteMovie(movie).observe(viewLifecycleOwner, { result ->
                     when (result) {
@@ -148,7 +168,11 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener, SearchView
                 })
             },
         )
+    }
 
+    private fun reloadData(position: Int) {
+        moviesAdapter.notifyItemRemoved(position)
+        moviesAdapter.notifyItemInserted(position)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -158,31 +182,30 @@ class MovieListFragment : Fragment(), SearchView.OnQueryTextListener, SearchView
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.movie_list_menu, menu)
-        val search = menu.findItem(R.id.movie_list_search)
-        val searchView = search.actionView as SearchView
-        searchView.apply {
-            isSubmitButtonEnabled = true
-            inputType = InputType.TYPE_CLASS_TEXT.or(InputType.TYPE_TEXT_FLAG_CAP_WORDS)
-            setOnQueryTextListener(this@MovieListFragment)
-            setOnCloseListener(this@MovieListFragment)
-        }
     }
 
-    override fun onQueryTextSubmit(query: String?): Boolean {
-        query?.let {
-            if (it.trim().isNotEmpty()) {
-                fetchMoviesByTitle(query)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.movie_list_delete_all -> {
+                showDeleteAllMoviesDialog(requireContext(), onConfirm = {
+                    deleteAllMovies()
+                })
+                true
             }
+            else -> super.onOptionsItemSelected(item)
         }
-        return true
     }
 
-    override fun onQueryTextChange(newText: String?): Boolean {
-        return true
-    }
-
-    override fun onClose(): Boolean {
-        fetchMovies()
-        return false
+    private fun deleteAllMovies() {
+        viewModel.deleteAllMovies().observe(viewLifecycleOwner, { result ->
+            when (result) {
+                is Success -> {
+                    showMessage(getString(R.string.all_reviews_deleted_message))
+                }
+                is Failure -> {
+                    result.error?.let { showMessage(it) }
+                }
+            }
+        })
     }
 }

@@ -13,74 +13,197 @@ import java.io.IOException
 
 class MovieRepository(private val movieDAO: MovieDAO, private val movieClient: MovieClient) {
 
+    // Cacheable data fetched from database or API
     private val _movies =
         MediatorLiveData<Resource<List<Movie>>>().also { Success<List<Movie>>(data = arrayListOf()) }
+
+    // Cacheable data fetched from database or API
     private val _favoriteMovies =
         MediatorLiveData<Resource<List<Movie>>>().also { Success<List<Movie>>(data = arrayListOf()) }
 
+    // Cacheable data fetched from database or API
+    private val _searchedMovies =
+        MutableLiveData<Resource<List<Movie>>>().also { Success<List<Movie>>(data = arrayListOf()) }
+
+    // Fetching from database
     fun fetchMovies(): LiveData<Resource<List<Movie>>> {
+        // Listen to database changes
         _movies.addSource(movieDAO.fetchMovies()) { result ->
+            // If is empty
             if (result.isEmpty()) {
-                fetchMoviesAPI()
+                // Return empty list
+                _movies.value = Success(data = arrayListOf())
             } else {
+                // Else return results
                 _movies.value = Success(data = result)
             }
         }
+        // Return mediator
         return _movies
     }
 
+    // Fetch movies by title from database
     fun fetchMoviesByTitle(title: String): LiveData<Resource<List<Movie>>> {
-        _movies.addSource(movieDAO.fetchMoviesByTitle("%$title%")) { result ->
-            if (result.isEmpty()) {
-                fetchMoviesByTitleAPI(title)
-            } else {
-                _movies.value = Success(data = result)
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                // Check movies with title
+                val movies = movieDAO.fetchMoviesByTitle("%$title%")
+                // If result it's empty
+                if (movies.isEmpty()) {
+                    // Fetch from API
+                    fetchMoviesByTitleAPI(title)
+                } else {
+                    // Else set live data data with result
+                    _searchedMovies.postValue(Success(data = movies))
+                }
+            } catch (exception: IOException) {
+                // Return Failure
+                _searchedMovies.value = Failure(error = exception.message)
             }
         }
-        return _movies
+        // return live data
+        return _searchedMovies
     }
 
+    // Fetching movies from API
     fun fetchMoviesAPI(): LiveData<Resource<Unit>> {
         val liveData = MutableLiveData<Resource<Unit>>()
+        // Call movie client
         movieClient.fetchMovies(
+            // On success callback
             onSuccess = { result ->
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
+                        // Save fetched data in database from future searches
                         movieDAO.insertMovie(result)
                     } catch (exception: IOException) {
-                        _movies.value = Failure(error = exception.message)
+                        // Return failure
+                        _movies.postValue(Failure(error = exception.message))
                     }
                 }
+                // Return success
                 liveData.value = Success()
             },
+            // On failure callback
             onFailure = { error ->
+                // Set movies with Failure
                 _movies.value = Failure(error = error)
+                // Return Failure
                 liveData.value = Failure()
             },
         )
+        // Return live data
         return liveData
     }
 
+    // Fetching movies by title from API
     private fun fetchMoviesByTitleAPI(title: String) {
+        // Call movie client
         movieClient.fetchMoviesByTitle(
             title = title,
+            // On success callback
             onSuccess = { result ->
                 CoroutineScope(Dispatchers.IO).launch {
+                    // Save fetched data in database from future searches
                     movieDAO.insertMovie(result)
                 }
-                _movies.value = Success(data = result)
+                // Set searched movies live data with results
+                _searchedMovies.value = Success(data = result)
             },
             onFailure = {
-                _movies.value = Success(data = arrayListOf())
+                // Set searched movies Failure
+                _searchedMovies.value = Failure(error = it)
             },
         )
     }
 
+    // Update movie favorite status in database
     fun toggleMovieFavorite(movie: Movie): LiveData<Resource<Unit>> {
         val liveData = MutableLiveData<Resource<Unit>>()
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                // Update movie with new favorite value using data class
                 movieDAO.updateMovie(movie.copy(favorite = !movie.favorite))
+                // Return Success
+                liveData.postValue(Success())
+            } catch (exception: IOException) {
+                // Return Failure
+                liveData.postValue(Failure(error = exception.message))
+            }
+        }
+        // Return live data
+        return liveData
+    }
+
+    // Fetching favorite movies from database
+    fun fetchFavoriteMovies(): LiveData<Resource<List<Movie>>> {
+        // Listen to database favorites changes
+        _favoriteMovies.addSource(movieDAO.fetchFavoriteMovies()) { result ->
+            // Set favorite movies mediator with Result
+            _favoriteMovies.value = Success(data = result)
+        }
+        // Return mediator
+        return _favoriteMovies
+    }
+
+    // Fetch movie from database
+    fun fetchMovie(title: String): LiveData<Resource<Movie>> {
+        val liveData = MediatorLiveData<Resource<Movie>>()
+        // Listen to database single movie changes
+        liveData.addSource(movieDAO.fetchMovie(title)) { result ->
+            // Check if movie is in database
+            if (result == null) {
+                // If it isn't, fetch from API
+                fetchMovieAPI(title, onSuccess = {
+                    // Return Success
+                    liveData.value = Success(data = it)
+                }, onFailure = {
+                    // Return Failure
+                    liveData.value = Failure(error = it)
+                })
+            } else {
+                // If exists, return Success
+                liveData.value = Success(data = result)
+            }
+        }
+        // Return live data
+        return liveData
+    }
+
+    // Fetch single movie from API
+    private fun fetchMovieAPI(
+        title: String,
+        onSuccess: (result: Movie) -> Unit,
+        onFailure: (error: String) -> Unit
+    ) {
+        // Call movie client
+        movieClient.fetchMoviesByTitle(
+            title,
+            // On success callback
+            onSuccess = {
+                // If result is empty
+                if (it.isEmpty()) {
+                    // Return Failure
+                    onFailure("Movie not found")
+                } else {
+                    // Return first item in results
+                    onSuccess(it[0])
+                }
+            },
+            // On failure callback
+            onFailure = {
+                // Return Failure
+                onFailure("Movie not found")
+            },
+        )
+    }
+
+    // Delete movie from database
+    fun deleteMovie(movie: Movie): LiveData<Resource<Unit>> {
+        val liveData = MutableLiveData<Resource<Unit>>()
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                movieDAO.deleteMovie(movie)
                 liveData.postValue(Success())
             } catch (exception: IOException) {
                 liveData.postValue(Failure(error = exception.message))
@@ -89,50 +212,12 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieClient: M
         return liveData
     }
 
-    fun fetchFavoriteMovies(): LiveData<Resource<List<Movie>>> {
-        _favoriteMovies.addSource(movieDAO.fetchFavoriteMovies()) { result ->
-            _favoriteMovies.value = Success(data = result)
-        }
-        return _favoriteMovies
-    }
-
-    fun fetchMovie(title: String): LiveData<Resource<Movie>> {
-        val liveData = MediatorLiveData<Resource<Movie>>()
-        liveData.addSource(movieDAO.fetchMovie(title)) { result ->
-            if (result == null) {
-                fetchMovieAPI(title, onSuccess = {
-                    liveData.value = Success(data = it)
-                }, onFailure = {
-                    liveData.value = Failure(error = it)
-                })
-            } else {
-                liveData.value = Success(data = result)
-            }
-        }
-        return liveData
-    }
-
-    private fun fetchMovieAPI(
-        title: String,
-        onSuccess: (result: Movie) -> Unit,
-        onFailure: (error: String) -> Unit
-    ) {
-        movieClient.fetchMoviesByTitle(title, onSuccess = {
-            if (it.isEmpty()) {
-                onFailure("Movie not found")
-            } else {
-                onSuccess(it[0])
-            }
-        }, onFailure = {
-            onFailure("Movie not found")
-        })
-    }
-
-    fun deleteMovie(movie: Movie): LiveData<Resource<Unit>> {
+    // Delete all movies from database
+    fun deleteAllMovies(): LiveData<Resource<Unit>> {
         val liveData = MutableLiveData<Resource<Unit>>()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                movieDAO.deleteMovie(movie)
+                movieDAO.deleteAllMovies()
                 liveData.postValue(Success())
             } catch (exception: IOException) {
                 liveData.postValue(Failure(error = exception.message))

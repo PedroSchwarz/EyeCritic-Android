@@ -5,6 +5,7 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.databinding.BindingAdapter
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.pedro.schwarz.desafioyourdev.ui.extension.*
 import com.pedro.schwarz.desafioyourdev.ui.extension.setRatingColor
@@ -46,4 +47,9 @@ fun FloatingActionButton.toggleRotate(isMenuOpen: Boolean) {
 @BindingAdapter("toggleVisibility")
 fun FloatingActionButton.toggleVisibility(isMenuOpen: Boolean) {
     toggleVisibilityAnimation(isMenuOpen)
+}
+
+@BindingAdapter("toggleVisibility")
+fun ExtendedFloatingActionButton.toggleVisibility(isEmpty: Boolean) {
+    toggleVisibilityAnimation(isEmpty)
 }

@@ -11,7 +11,7 @@ interface MovieDAO {
     fun fetchMovies(): LiveData<List<Movie>>
 
     @Query("SELECT * FROM movie WHERE display_title LIKE :title")
-    fun fetchMoviesByTitle(title: String): LiveData<List<Movie>>
+    fun fetchMoviesByTitle(title: String): List<Movie>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertMovie(movies: List<Movie>)
@@ -30,4 +30,7 @@ interface MovieDAO {
 
     @Delete
     fun deleteMovie(movie: Movie)
+
+    @Query("DELETE FROM movie")
+    fun deleteAllMovies()
 }

@@ -40,9 +40,9 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
 
     fun refreshMovies() = movieRepository.fetchMoviesAPI()
 
-    fun fetchMoviesByTitle(title: String) = movieRepository.fetchMoviesByTitle(title)
-
     fun toggleMovieFavorite(movie: Movie) = movieRepository.toggleMovieFavorite(movie)
 
     fun deleteMovie(movie: Movie) = movieRepository.deleteMovie(movie)
+
+    fun deleteAllMovies() = movieRepository.deleteAllMovies()
 }

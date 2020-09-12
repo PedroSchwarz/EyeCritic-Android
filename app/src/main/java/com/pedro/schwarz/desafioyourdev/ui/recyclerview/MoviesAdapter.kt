@@ -10,6 +10,7 @@ import com.pedro.schwarz.desafioyourdev.databinding.ItemMovieBinding
 import com.pedro.schwarz.desafioyourdev.model.Movie
 
 class MoviesAdapter(
+    val hasToggle: Boolean,
     var onToggleFavorite: (movie: Movie) -> Unit = {},
     var onItemClick: (title: String) -> Unit = {}
 ) : ListAdapter<Movie, MoviesAdapter.ViewHolder>(MovieCallback) {
@@ -35,6 +36,7 @@ class MoviesAdapter(
         fun bind(item: Movie) {
             this.movie = item
             binding.movie = this.movie
+            binding.hasToggle = hasToggle
         }
     }
 }

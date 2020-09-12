@@ -18,6 +18,10 @@
         <variable
             name="movie"
             type="com.pedro.schwarz.desafioyourdev.model.Movie" />
+
+        <variable
+            name="hasToggle"
+            type="Boolean" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -78,10 +82,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
+                    android:visibility="@{movie.mpaa_rating.isEmpty() ? View.GONE : View.VISIBLE}"
                     app:cardCornerRadius="20dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/item_movie_title"
-                    android:visibility="@{movie.mpaa_rating.isEmpty() ? View.GONE : View.VISIBLE}"
                     app:setRatingColor="@{movie.mpaa_rating}">
 
                     <TextView
@@ -132,7 +136,8 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:setFavoriteStateIndicator="@{movie.favorite}"
                     app:srcCompat="@drawable/ic_unfavorite"
-                    app:tint="@color/colorError" />
+                    app:tint="@color/colorError"
+                    app:toggleVisibility="@{hasToggle}" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
