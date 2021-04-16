@@ -1,7 +1,7 @@
 package com.pedro.schwarz.desafioyourdev.ui.dialog
 
-import android.app.AlertDialog
 import android.content.Context
+import androidx.appcompat.app.AlertDialog
 import com.pedro.schwarz.desafioyourdev.R
 
 fun showDeleteMovieDialog(

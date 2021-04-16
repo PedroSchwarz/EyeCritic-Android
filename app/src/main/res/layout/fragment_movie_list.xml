@@ -41,6 +41,7 @@
                 android:id="@+id/movie_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:transitionGroup="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -89,6 +90,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:shapeAppearance="@style/ShapeAppearance.SquaredFAB"
             app:srcCompat="@drawable/ic_refresh"
             app:toggleVisibility="@{viewModel.isEmpty}" />
     </androidx.constraintlayout.widget.ConstraintLayout>

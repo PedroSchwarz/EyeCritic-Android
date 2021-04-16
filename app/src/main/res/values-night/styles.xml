@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
@@ -5,11 +6,10 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorSurface">@color/colorLight</item>
-        <item name="colorOnSurface">@color/colorDark</item>
+        <item name="colorSurface">@color/colorDarkGrey</item>
+        <item name="colorOnSurface">@color/colorLight</item>
         <item name="alertDialogTheme">@style/AppTheme.AlertDialog</item>
-        <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.PrimarySurface</item>
-        <item name="bottomNavigationStyle">@style/Widget.MaterialComponents.BottomNavigationView.PrimarySurface</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="AppTheme.AlertDialog" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
@@ -22,5 +22,4 @@
     <style name="AppTheme.AlertDialog.AlertDialogActions" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textColor">@color/colorAccent</item>
     </style>
-
 </resources>

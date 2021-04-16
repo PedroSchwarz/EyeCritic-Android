@@ -2,12 +2,16 @@ package com.pedro.schwarz.desafioyourdev.ui.fragment
 
 import android.os.Bundle
 import android.view.*
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
+import androidx.paging.PagedList
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.transition.MaterialElevationScale
 import com.pedro.schwarz.desafioyourdev.R
 import com.pedro.schwarz.desafioyourdev.databinding.FragmentMovieListBinding
 import com.pedro.schwarz.desafioyourdev.model.Movie
@@ -44,15 +48,22 @@ class MovieListFragment : Fragment() {
     }
 
     private fun configMovieClick() {
-        moviesAdapter.onItemClick = { title ->
-            goToMovieDetails(title)
+        moviesAdapter.onItemClick = { title, itemView ->
+            goToMovieDetails(title, itemView)
         }
     }
 
-    private fun goToMovieDetails(title: String) {
+    private fun goToMovieDetails(title: String, itemView: View) {
+        exitTransition = MaterialElevationScale(false).apply {
+            duration = 300
+        }
+        reenterTransition = MaterialElevationScale(true).apply {
+            duration = 300
+        }
+        val extras = FragmentNavigatorExtras(itemView to title)
         val action =
             MovieListFragmentDirections.actionMovieListFragmentToMovieDetailsFragment(title)
-        controller.navigate(action)
+        controller.navigate(action, extras)
     }
 
     private fun configToggleFavorite() {
@@ -76,7 +87,7 @@ class MovieListFragment : Fragment() {
 
     private fun fetchMovies() {
         viewModel.setIsLoading = true
-        viewModel.fetchMovies().observe(this, { result ->
+        viewModel.fetchMovies().observe(this, { result: Resource<PagedList<Movie>> ->
             when (result) {
                 is Success -> {
                     setEmptyList(result)
@@ -90,8 +101,8 @@ class MovieListFragment : Fragment() {
         })
     }
 
-    private fun setEmptyList(result: Resource<List<Movie>>) {
-        result.data?.let { viewModel.setIsEmpty = it.isEmpty() }
+    private fun setEmptyList(result: Resource<PagedList<Movie>>) {
+        viewModel.setIsEmpty = result.data.isNullOrEmpty()
     }
 
     private fun refreshMovies() {
@@ -123,7 +134,7 @@ class MovieListFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         handleOnRefresh(binding)
-        handleOnFetchLastestReviews(binding)
+        handleOnFetchLatestReviews(binding)
         configList(binding)
     }
 
@@ -141,7 +152,7 @@ class MovieListFragment : Fragment() {
         touchHelper.attachToRecyclerView(this)
     }
 
-    private fun handleOnFetchLastestReviews(binding: FragmentMovieListBinding) {
+    private fun handleOnFetchLatestReviews(binding: FragmentMovieListBinding) {
         binding.onFetchLatestReviews = View.OnClickListener { refreshMovies() }
     }
 
@@ -150,24 +161,27 @@ class MovieListFragment : Fragment() {
     }
 
     private fun deleteMovie(position: Int) {
-        val movie = moviesAdapter.currentList[position]
-        showDeleteMovieDialog(
-            requireContext(),
-            movie.display_title,
-            onCancel = { reloadData(position) },
-            onConfirm = {
-                viewModel.deleteMovie(movie).observe(viewLifecycleOwner, { result ->
-                    when (result) {
-                        is Success -> {
-                            showMessage(getString(R.string.review_deleted_message))
-                        }
-                        is Failure -> {
-                            result.error?.let { showMessage(it) }
-                        }
-                    }
-                })
-            },
-        )
+        moviesAdapter.currentList?.let {
+            it[position]?.let { movie ->
+                showDeleteMovieDialog(
+                    requireContext(),
+                    movie.display_title,
+                    onCancel = { reloadData(position) },
+                    onConfirm = {
+                        viewModel.deleteMovie(movie).observe(viewLifecycleOwner, { result ->
+                            when (result) {
+                                is Success -> {
+                                    showMessage(getString(R.string.review_deleted_message))
+                                }
+                                is Failure -> {
+                                    result.error?.let { error -> showMessage(error) }
+                                }
+                            }
+                        })
+                    },
+                )
+            }
+        }
     }
 
     private fun reloadData(position: Int) {
@@ -178,6 +192,8 @@ class MovieListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         appViewModel.setComponents = Components(appBar = true, bottomBar = true)
+        postponeEnterTransition()
+        view.doOnPreDraw { startPostponedEnterTransition() }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

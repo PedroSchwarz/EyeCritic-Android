@@ -1,14 +1,17 @@
 package com.pedro.schwarz.desafioyourdev.ui.fragment
 
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.res.use
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.material.transition.MaterialContainerTransform
 import com.pedro.schwarz.desafioyourdev.R
 import com.pedro.schwarz.desafioyourdev.databinding.FragmentMovieDetailsBinding
 import com.pedro.schwarz.desafioyourdev.model.Movie
@@ -20,7 +23,6 @@ import com.pedro.schwarz.desafioyourdev.ui.extension.showMessage
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.AppViewModel
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.Components
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.MovieDetailsViewModel
-import org.jetbrains.annotations.NotNull
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -37,6 +39,16 @@ class MovieDetailsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fetchMovie()
+        sharedElementEnterTransition = MaterialContainerTransform().apply {
+            drawingViewId = R.id.nav_host
+            duration = 300
+            scrimColor = Color.TRANSPARENT
+            setAllContainerColors(requireContext().obtainStyledAttributes(
+                intArrayOf(R.attr.colorSurface)
+            ).use {
+                it.getColor(0, Color.MAGENTA)
+            })
+        }
     }
 
     private fun fetchMovie() {
@@ -68,6 +80,7 @@ class MovieDetailsFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         binding.movie = movieData
+        binding.root.transitionName = title
         handleOnGoToArticle(binding)
         handleOnShareArticle(binding)
         handleOnToggleFavorite(binding)

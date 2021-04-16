@@ -1,6 +1,7 @@
 package com.pedro.schwarz.desafioyourdev.database.dao
 
 import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
 import androidx.room.*
 import com.pedro.schwarz.desafioyourdev.model.Movie
 
@@ -8,29 +9,29 @@ import com.pedro.schwarz.desafioyourdev.model.Movie
 interface MovieDAO {
 
     @Query("SELECT * FROM movie ORDER BY publication_date DESC")
-    fun fetchMovies(): LiveData<List<Movie>>
+    fun fetchMovies(): DataSource.Factory<Int, Movie>
 
     @Query("SELECT * FROM movie WHERE display_title LIKE :title")
     fun fetchMoviesByTitle(title: String): List<Movie>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertMovie(movies: List<Movie>)
+    suspend fun insertMovie(movies: List<Movie>)
 
     @Insert
-    fun insertMovie(movie: Movie)
+    suspend fun insertMovie(movie: Movie)
 
     @Update
-    fun updateMovie(movie: Movie)
+    suspend fun updateMovie(movie: Movie)
 
     @Query("SELECT * FROM movie WHERE favorite = 1")
-    fun fetchFavoriteMovies(): LiveData<List<Movie>>
+    fun fetchFavoriteMovies(): DataSource.Factory<Int, Movie>
 
     @Query("SELECT * FROM movie WHERE display_title = :title")
     fun fetchMovie(title: String): LiveData<Movie>
 
     @Delete
-    fun deleteMovie(movie: Movie)
+    suspend fun deleteMovie(movie: Movie)
 
     @Query("DELETE FROM movie")
-    fun deleteAllMovies()
+    suspend fun deleteAllMovies()
 }

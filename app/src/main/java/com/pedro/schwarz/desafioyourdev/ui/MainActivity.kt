@@ -7,6 +7,8 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.pedro.schwarz.desafioyourdev.R
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.AppViewModel
@@ -22,11 +24,14 @@ class MainActivity : AppCompatActivity() {
         ).build()
     }
     private val appViewModel by viewModel<AppViewModel>()
+    private val appBar: AppBarLayout by lazy { findViewById(R.id.appbar) }
+    private val mainToolbar: MaterialToolbar by lazy { findViewById(R.id.main_toolbar) }
     private val mainBottomNav: BottomNavigationView by lazy { findViewById(R.id.main_bottom_nav) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        setSupportActionBar(mainToolbar)
         setupActionBarWithNavController(controller, appBarConfiguration)
         mainBottomNav.setupWithNavController(controller)
         configUIComponentsListener()
@@ -37,8 +42,10 @@ class MainActivity : AppCompatActivity() {
             supportActionBar?.let {
                 if (components.appBar) {
                     it.show()
+                    appBar.visibility = View.VISIBLE
                 } else {
                     it.hide()
+                    appBar.visibility = View.GONE
                 }
             }
             if (components.bottomBar) {
