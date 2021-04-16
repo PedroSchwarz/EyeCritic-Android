@@ -70,6 +70,7 @@ dependencies {
     // Room
     def room_version = "2.2.5"
     implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
     // Navigation
@@ -77,9 +78,14 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
+    // Paging
+    def paging_version = "2.1.2"
+
+    implementation "androidx.paging:paging-runtime-ktx:$paging_version"
+
     // Retrofit
-    def retrofit_version = "2.7.2"
-    def gson_version = "2.4.0"
+    def retrofit_version = "2.9.0"
+    def gson_version = "2.9.0"
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$gson_version"
 

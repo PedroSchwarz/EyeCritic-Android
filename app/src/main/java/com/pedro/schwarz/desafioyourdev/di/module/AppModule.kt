@@ -4,7 +4,6 @@ import androidx.room.Room
 import com.pedro.schwarz.desafioyourdev.database.AppDatabase
 import com.pedro.schwarz.desafioyourdev.database.dao.MovieDAO
 import com.pedro.schwarz.desafioyourdev.repository.MovieRepository
-import com.pedro.schwarz.desafioyourdev.retrofit.client.MovieClient
 import com.pedro.schwarz.desafioyourdev.retrofit.service.MovieService
 import com.pedro.schwarz.desafioyourdev.ui.recyclerview.MoviesAdapter
 import com.pedro.schwarz.desafioyourdev.ui.viewmodel.*
@@ -32,7 +31,6 @@ val retrofitModule = module {
             .build()
     }
     single<MovieService> { get<Retrofit>().create(MovieService::class.java) }
-    single<MovieClient> { MovieClient(get()) }
 }
 
 // Database DAOs and repositories module

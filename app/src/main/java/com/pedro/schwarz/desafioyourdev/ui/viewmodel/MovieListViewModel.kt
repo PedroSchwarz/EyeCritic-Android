@@ -3,10 +3,16 @@ package com.pedro.schwarz.desafioyourdev.ui.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.paging.PagedList
 import com.pedro.schwarz.desafioyourdev.model.Movie
 import com.pedro.schwarz.desafioyourdev.repository.MovieRepository
+import com.pedro.schwarz.desafioyourdev.repository.Resource
+import kotlinx.coroutines.Job
 
 class MovieListViewModel(private val movieRepository: MovieRepository) : ViewModel() {
+
+    private val job = Job()
 
     private val _isLoading = MutableLiveData<Boolean>().also { it.value = true }
     val isLoading: LiveData<Boolean>
@@ -36,13 +42,18 @@ class MovieListViewModel(private val movieRepository: MovieRepository) : ViewMod
             _isRefreshing.value = value
         }
 
-    fun fetchMovies() = movieRepository.fetchMovies()
+    fun fetchMovies(): LiveData<Resource<PagedList<Movie>>> = movieRepository.fetchMovies()
 
-    fun refreshMovies() = movieRepository.fetchMoviesAPI()
+    fun refreshMovies() = movieRepository.fetchMoviesAPI(job = job)
 
-    fun toggleMovieFavorite(movie: Movie) = movieRepository.toggleMovieFavorite(movie)
+    fun toggleMovieFavorite(movie: Movie) = movieRepository.toggleMovieFavorite(movie, job = job)
 
-    fun deleteMovie(movie: Movie) = movieRepository.deleteMovie(movie)
+    fun deleteMovie(movie: Movie) = movieRepository.deleteMovie(movie, job = job)
 
-    fun deleteAllMovies() = movieRepository.deleteAllMovies()
+    fun deleteAllMovies() = movieRepository.deleteAllMovies(job = job)
+
+    override fun onCleared() {
+        super.onCleared()
+        job.cancel()
+    }
 }

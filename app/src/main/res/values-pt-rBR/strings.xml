@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Eye Critic</string>
     <string name="nav_reviews_label">Reviews de Filmes Mais Recentes</string>
-    <string name="nav_favorites_label">Meu Favoritos</string>
+    <string name="nav_favorites_label">Meus Favoritos</string>
     <string name="nav_review_details">Detalhes da Review do Filme</string>
     <string name="movie_details_image">Imagem do Filme</string>
     <string name="movie_details_read_full_article">Leia o artigo inteiro</string>
@@ -34,7 +34,7 @@
     <string name="delete_all_reviews_dialog_message">Tem certeza que deseja remover todas as reviews da lista?</string>
     <string name="all_reviews_deleted_message">Todas reviews deletadas</string>
     <string name="movie_list_get_latest_reviews">Buscar Últimas Reviews</string>
-    <string name="search_movie_search">Buscar...</string>
+    <string name="search_movie_search">Buscar…</string>
     <string name="search_movie_empty_title_message">O título não pode ser vazio</string>
     <string name="nav_search_reviews">Buscar Reviews</string>
 </resources>

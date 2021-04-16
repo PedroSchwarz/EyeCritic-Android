@@ -6,8 +6,11 @@ import androidx.lifecycle.ViewModel
 import com.pedro.schwarz.desafioyourdev.model.Movie
 import com.pedro.schwarz.desafioyourdev.repository.MovieRepository
 import com.pedro.schwarz.desafioyourdev.repository.Resource
+import kotlinx.coroutines.Job
 
 class MovieDetailsViewModel(private val movieRepository: MovieRepository) : ViewModel() {
+
+    private val job = Job()
 
     private val _isLoading = MutableLiveData<Boolean>().also { it.value = true }
     val isLoading: LiveData<Boolean>
@@ -27,7 +30,12 @@ class MovieDetailsViewModel(private val movieRepository: MovieRepository) : View
             _isMenuOpen.value = value
         }
 
-    fun fetchMovie(title: String): LiveData<Resource<Movie>> = movieRepository.fetchMovie(title)
+    fun fetchMovie(title: String): LiveData<Resource<Movie>> = movieRepository.fetchMovie(title, job = job)
 
-    fun toggleMovieFavorite(movie: Movie) = movieRepository.toggleMovieFavorite(movie)
+    fun toggleMovieFavorite(movie: Movie) = movieRepository.toggleMovieFavorite(movie, job = job)
+
+    override fun onCleared() {
+        super.onCleared()
+        job.cancel()
+    }
 }
