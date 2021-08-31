@@ -1,5 +1,4 @@
 <div align="center"><h1> Eye Critic App </h1>
-  <strong>Desafio The New York Times</strong>
   <br>
   <img src="/app/src/main/res/drawable-v24/logo_eye_critic.png" width="150">
   <br>
