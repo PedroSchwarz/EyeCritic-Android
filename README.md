@@ -2,7 +2,6 @@
   <br>
   <img src="/app/src/main/res/drawable-v24/logo_eye_critic.png" width="150">
   <br>
-  <small>Logo feito por minha namorada</small>
 </div>
 
 <div align="start">
