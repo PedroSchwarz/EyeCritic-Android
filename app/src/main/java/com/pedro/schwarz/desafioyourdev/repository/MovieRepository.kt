@@ -39,6 +39,7 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieService: 
             if (result.isEmpty()) {
                 // Return empty list
                 _movies.value = Success(data = null)
+                fetchMoviesAPI()
             } else {
                 // Else return results
                 _movies.value = Success(data = result)
@@ -82,8 +83,9 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieService: 
         // Call movie client
         CoroutineScope(Dispatchers.IO + job).launch {
             try {
-                val response = movieService.fetchMovies()
-                val movies = convertToMovies(result = response.results)
+                val data = movieService.fetchMovies()
+                Log.i("Response", data.toString())
+                val movies = convertToMovies(result = data.response.docs)
                 movieDAO.insertMovie(movies)
                 liveData.postValue(Success())
             } catch (e: IOException) {
@@ -100,8 +102,8 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieService: 
         // Call movie client
         CoroutineScope(Dispatchers.IO + job).launch {
             try {
-                val response = movieService.fetchMoviesByTitle(title)
-                val movies = convertToMovies(result = response.results)
+                val data = movieService.fetchMoviesByTitle(title)
+                val movies = convertToMovies(result = data.response.docs)
                 movieDAO.insertMovie(movies)
                 val pagedListMovies =
                     PagedList.Builder(ListDataSource<Movie>(movies), PAGED_LIST_SIZE)
@@ -180,8 +182,8 @@ class MovieRepository(private val movieDAO: MovieDAO, private val movieService: 
         // Call movie client
         CoroutineScope(Dispatchers.IO + job).launch {
             try {
-                val response = movieService.fetchMoviesByTitle(title)
-                val movies = convertToMovies(result = response.results)
+                val data = movieService.fetchMoviesByTitle(title)
+                val movies = convertToMovies(result = data.response.docs)
                 if (movies.isEmpty()) {
                     onFailure("Movie not found")
                 } else {

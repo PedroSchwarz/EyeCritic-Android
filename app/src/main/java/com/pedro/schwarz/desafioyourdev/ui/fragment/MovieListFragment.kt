@@ -1,6 +1,7 @@
 package com.pedro.schwarz.desafioyourdev.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
@@ -90,7 +91,10 @@ class MovieListFragment : Fragment() {
         viewModel.fetchMovies().observe(this, { result: Resource<PagedList<Movie>> ->
             when (result) {
                 is Success -> {
-                    setEmptyList(result)
+                    if (result.data.isNullOrEmpty()) {
+                        refreshMovies()
+                    }
+//                    setEmptyList(result)
                     moviesAdapter.submitList(result.data)
                 }
                 is Failure -> {
@@ -196,10 +200,12 @@ class MovieListFragment : Fragment() {
         view.doOnPreDraw { startPostponedEnterTransition() }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.movie_list_menu, menu)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.movie_list_delete_all -> {

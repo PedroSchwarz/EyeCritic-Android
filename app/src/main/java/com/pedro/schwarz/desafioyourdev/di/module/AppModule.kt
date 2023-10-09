@@ -13,7 +13,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 private const val DATABASE_NAME = "eye_critic"
-private const val API_BASE_URL = "https://api.nytimes.com/svc/movies/v2/reviews/"
+private const val API_BASE_URL = "https://api.nytimes.com/svc/search/v2/"
 
 // Database creation module
 val databaseModule = module {

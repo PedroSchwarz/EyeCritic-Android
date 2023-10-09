@@ -8,7 +8,7 @@ private const val API_KEY = "pFhpA36Zm3zAqJIZw0ZsxH9MOtWKT5yH"
 
 interface MovieService {
 
-    @GET("all.json?api-key=$API_KEY")
+    @GET("articlesearch.json?q=movie&api-key=$API_KEY")
     suspend fun fetchMovies(): MovieResponse
 
     @GET("search.json?api-key=$API_KEY")

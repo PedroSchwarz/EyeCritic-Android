@@ -1,3 +1,3 @@
 package com.pedro.schwarz.desafioyourdev.model
 
-class MovieResponse(val results: List<MovieResult>)
+class MovieResponse(val response: ArticleDocs)

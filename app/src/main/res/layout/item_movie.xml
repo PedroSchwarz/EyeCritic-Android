@@ -76,6 +76,8 @@
                     android:text="@{movie.display_title}"
                     android:textColor="@color/colorLight"
                     android:textSize="14sp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
                     app:layout_constraintEnd_toStartOf="@+id/item_movie_age_card"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/item_movie_image"
